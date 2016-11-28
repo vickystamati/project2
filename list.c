@@ -5,6 +5,9 @@
 #include"hash.h"
 #include"list.h"
 #include"initialise.h"
+#include "assignment.h"
+#include"update.h"
+#include"clara.h"
 
 void search(struct list *lista,long long find,long idfind,struct distlist * dilist,int length,double radius,int L)
 {
@@ -620,3 +623,6 @@ long int mod (long int a, long int b)
 		ret+=b;
 	return ret;
 }
+
+
+

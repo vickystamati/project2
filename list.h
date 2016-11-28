@@ -14,6 +14,7 @@ struct node{
 	long long key;//binary
 	long  id;//itemid
 	long findid;//ID P
+	double dist;
 	double * key1;
 	struct node * next;
 };
@@ -21,6 +22,8 @@ struct node{
 struct list{
 	struct node * head;
 };
+
+
 void createdlist(struct distlist * );
 void insert(struct list * ,long long ,long );
 void insertnear(struct distlist * ,struct distnode * );

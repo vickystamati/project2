@@ -5,15 +5,12 @@
 #include"hash.h"
 #include"list.h"
 #include"initialise.h"
+#include "assignment.h"
+#include"update.h"
+#include"clara.h"
 #include<time.h>
 #define bufSize 2048
 #define bafSize 8192
-
-void createlist(struct list * lista)
-{
-	lista=malloc(sizeof(struct list));
-	lista->head=NULL;
-}
 
 void inserthamm(struct list * lista,char * dfile)
 {
@@ -254,7 +251,7 @@ int getcoslength(char * dfile)
 }
 
 
-void concentrateham(struct list * lista,double ** matrix,int length,int counter,struct node ** centroids,int cent)
+void concentrateham(struct list * lista,double ** matrix,int length,int counter,struct node * centroids,int cent)
 {
 	struct node * temp;
 	struct node * temp2;
@@ -303,7 +300,7 @@ void concentrateham(struct list * lista,double ** matrix,int length,int counter,
 }
 
 
-void concentratecos(struct list * lista,double ** matrix,int length,int counter,struct node ** centroids,int cent)
+void concentratecos(struct list * lista,double ** matrix,int length,int counter,struct node * centroids,int cent)
 {
 	struct node * temp;
 	struct node * temp2;
@@ -351,7 +348,7 @@ void concentratecos(struct list * lista,double ** matrix,int length,int counter,
 	concentfinal(lista,matrix,counter,centroids,cent);
 }
 
-void concentrateeucl(struct list * lista,double ** matrix,int length,int counter,struct node ** centroids,int cent)
+void concentrateeucl(struct list * lista,double ** matrix,int length,int counter,struct node * centroids,int cent)
 {
 	struct node * temp;
 	struct node * temp2;
@@ -394,7 +391,7 @@ void concentrateeucl(struct list * lista,double ** matrix,int length,int counter
 	concentfinal(lista,matrix,counter,centroids,cent);
 }
 
-void concentratematr(struct list * lista,double ** matrix,int counter,struct node ** centroids,int cent)
+void concentratematr(struct list * lista,double ** matrix,int counter,struct node * centroids,int cent)
 {
 	int i,j;
 	struct node * temp;
@@ -415,12 +412,12 @@ void concentratematr(struct list * lista,double ** matrix,int counter,struct nod
 
 
 
-void concentfinal(struct list * lista,double ** matrix,int counter,struct node ** centroids,int cent)
+void concentfinal(struct list * lista,double ** matrix,int counter,struct node * centroids,int cent)
 {
 	struct node * temp;
 	int i,j,t;
 	double sum, **summax;
-	summax=malloc(counter*sizeof(double));
+	summax=malloc(counter*sizeof(double*));
 	for(i=0;i<counter;i++)
 		summax[i]=malloc(2*sizeof(double));
 	temp=lista->head;
@@ -453,11 +450,11 @@ void concentfinal(struct list * lista,double ** matrix,int counter,struct node *
 		{
 			temp=temp->next;
 		}
-		centroids[i]=temp;	
+		centroids[i]=*temp;	
 	}
 }
 
-void medoidsham(struct list * lista,double ** matrix,int length,int counter,struct node ** centroids,int cent)
+void medoidsham(struct list * lista,int length,int counter,struct node * centroids,int cent)
 {
 	int random;
 	struct node * temp;
@@ -465,16 +462,16 @@ void medoidsham(struct list * lista,double ** matrix,int length,int counter,stru
 	double ** disttable;
 	double ** ptable;
 	int i,j,z;
-	double distance;
+	double distance,distancemin;
 	char * token, * token2;
 	double x,r;
+	int flag;
 	int ccount=0;//metritis kentroidon
-	srand(time(NULL));		
+	srand(time(NULL));	
+	disttable=malloc(2*sizeof(double*));
+	ptable=malloc(2*sizeof(double*));	
 	while(ccount<cent)
-	{
-
-		disttable=malloc(2*sizeof(double));
-		ptable=malloc(2*sizeof(double));
+	{	
 		for(i=0;i<2;i++)
 		{
 			disttable[i]=malloc((counter-ccount-1)*sizeof(double));
@@ -488,45 +485,84 @@ void medoidsham(struct list * lista,double ** matrix,int length,int counter,stru
 			{
 				temp=temp->next;
 			}
-			printf("ce1nt %lu\n",temp->id);
 		}
 		else
 		{
 			while(temp->id!=r)
-				temp=temp->next;
-			printf("ce2nt %lu\n",temp->id);
-			
+				temp=temp->next;		
 		}
-		printf("%d\n",ccount);
-		centroids[ccount]=temp;
+		centroids[ccount]=*temp;
 		if(ccount==(cent-1))
 			break;
-		token=malloc(length*sizeof(char));
-		turnintobinary(temp->key ,length ,token);
 		temp2=lista->head;
 		j=0;
-		while(temp2!=NULL)
+		if(ccount==0)
 		{
-			distance=0;
-			if(temp2->id!=centroids[ccount]->id)
+			token=malloc(length*sizeof(char));
+			turnintobinary(temp->key ,length ,token);
+			while(temp2!=NULL)
 			{
-				token2=malloc(length*sizeof(char));
-				turnintobinary(temp2->key ,length ,token2);
-				for(z=0;z<length;z++)
+				distance=0;
+				if(temp2->id!=centroids[ccount].id)
 				{
-					if(token[z]!=token2[z])
-						distance++;
-				}
-				free(token2);
-				disttable[0][j]=temp2->id;
-				disttable[1][j]=distance;
+					token2=malloc(length*sizeof(char));
+					turnintobinary(temp2->key ,length ,token2);
+					for(z=0;z<length;z++)
+					{
+						if(token[z]!=token2[z])
+							distance++;
+					}
+					free(token2);
+					disttable[0][j]=temp2->id;
+					disttable[1][j]=distance;
+					j++;
+				}	
+				temp2=temp2->next;
 			}
-			
-			temp2=temp2->next;
-			j++;
+			free(token);
+		}
+		else
+		{
+			while(temp2!=NULL)
+			{
+				flag=0;
+				distancemin=100000;//paradoxi
+				for(i=0;i<ccount;i++)
+				{
+					if(temp2->id==centroids[i].id)
+					{
+						flag=1;
+						break;
+					}
+				}
+				if(flag==0)
+				{
+					token2=malloc(length*sizeof(char));
+					turnintobinary(temp2->key ,length ,token2);
+					for(i=0;i<ccount;i++)
+					{
+						token=malloc(length*sizeof(char));
+						turnintobinary(centroids[i].key ,length ,token);
+						distance=0;
+						for(z=0;z<length;z++)
+						{
+							if(token[z]!=token2[z])
+								distance++;
+						}
+						free(token);
+						if(distance<distancemin)
+							distancemin=distance;
+					}
+					free(token2);
+					disttable[0][j]=temp2->id;
+					disttable[1][j]=distancemin;
+					j++;
+					
+				}	
+				temp2=temp2->next;
+			}
 		}
 		ccount++;
-		free(token);
 		ptable[1][0]=0;
 		for(i=1;i<(counter-ccount);i++)
 		{
@@ -534,7 +570,6 @@ void medoidsham(struct list * lista,double ** matrix,int length,int counter,stru
 			ptable[1][i]+=ptable[1][i-1]+(disttable[1][i-1] *disttable[1][i-1]);
 		}
 		x=1+ (rand() /( RAND_MAX + 1.0))*(ptable[1][counter-ccount-1]-1);
-		printf("%f\n",x);
 		for(i=0;i<(counter-ccount);i++)
 		{
 			if(x<=ptable[1][i])
@@ -544,7 +579,273 @@ void medoidsham(struct list * lista,double ** matrix,int length,int counter,stru
 			}
 			
 		}	
-		printf("%f\n",r);
+		//printf("%f\n",r);
+		for(i=0;i<2;i++)
+		{
+			//free(disttable[i]);
+			//free(ptable[i]);
+		}
+		/*free(ptable);
+		free(disttable);*/
+	}
+
+}
+
+void medoidscos(struct list * lista,int length,int counter,struct node * centroids,int cent)
+{
+	int random;
+	struct node * temp;
+	struct node * temp2;
+	double ** disttable;
+	double ** ptable;
+	int i,j,z,flag;
+	double sum,sum1,sum2;
+	double distance,distancemin;
+	double x,r;
+	int ccount=0;//metritis kentroidon
+	disttable=malloc(2*sizeof(double*));
+	ptable=malloc(2*sizeof(double*));
+	srand(time(NULL));		
+	while(ccount<cent)
+	{
+		for(i=0;i<2;i++)
+		{
+			disttable[i]=malloc((counter-ccount-1)*sizeof(double));
+			ptable[i]=malloc((counter-ccount)*sizeof(double));
+		}
+		temp=lista->head;
+		if(ccount==0)
+		{
+			random=1+ (rand() /( RAND_MAX + 1.0))*(counter-1);
+			for(i=0;i<random;i++)
+			{
+				temp=temp->next;
+			}
+		}
+		else
+		{
+			while(temp->id!=r)
+				temp=temp->next;	
+		}
+		centroids[ccount]=*temp;
+		if(ccount==(cent-1))
+			break;
+		j=0;
+		temp2=lista->head;
+		if(ccount==0)
+		{
+			while(temp2!=NULL)
+			{
+				if(temp2->id!=centroids[ccount].id)
+				{
+					sum=0,sum1=0,sum2=0;
+					for(z=0;z<length;z++)//upologismos typou cosine
+					{
+						sum+=temp->key1[z] * temp2->key1[z];
+						sum1+=temp->key1[z] * temp->key1[z];
+						sum2+=temp2->key1[z] * temp2->key1[z];
+					}
+					if(sum1>0 && sum2>0)//epeidi einai riza, elegxos na einai diaforetiko ap to 0
+					{
+						disttable[0][j]=temp2->id;
+						disttable[1][j]=1-(sum/(sqrt(sum1) * sqrt(sum2)));
+					}
+					else 
+					{
+						disttable[0][j]=temp2->id;
+						disttable[1][j]=0;
+					}
+					j++;
+				}
+				temp2=temp2->next;
+			}
+		}
+		else
+		{
+			while(temp2!=NULL)
+			{
+				flag=0;
+				distancemin=100000;//paradoxi
+				for(i=0;i<ccount;i++)
+				{
+					if(temp2->id==centroids[i].id)
+					{
+						flag=1;
+						break;
+					}
+				}
+				if(flag==0)
+				{
+					for(i=0;i<ccount;i++)
+					{
+						sum=0,sum1=0,sum2=0;
+						for(z=0;z<length;z++)//upologismos typou cosine
+						{
+							sum+=centroids[i].key1[z] * temp2->key1[z];
+							sum1+=centroids[i].key1[z] * centroids[i].key1[z];
+							sum2+=temp2->key1[z] * temp2->key1[z];
+						}
+						if(sum1>0 && sum2>0)//epeidi einai riza, elegxos na einai diaforetiko ap to 0
+						{
+							distance=1-(sum/(sqrt(sum1) * sqrt(sum2)));
+							if(distance<distancemin)
+								distancemin=distance;
+						}
+					}
+					disttable[0][j]=temp2->id;
+					disttable[1][j]=distance;
+					j++;
+				}
+				temp2=temp2->next;
+			}
+		}
+		ccount++;
+		ptable[1][0]=0;
+		for(i=1;i<(counter-ccount);i++)
+		{
+			ptable[0][i]=disttable[0][i-1];
+			ptable[1][i]+=ptable[1][i-1]+(disttable[1][i-1] *disttable[1][i-1]);
+		}
+		x=1+ (rand() /( RAND_MAX + 1.0))*(ptable[1][counter-ccount-1]-1);
+		for(i=0;i<(counter-ccount);i++)
+		{
+			if(x<=ptable[1][i])
+			{
+				r=ptable[0][i];
+				break;
+			}
+			
+		}	
+		//printf("%f\n",r);
+		/*for(i=0;i<2;i++)
+		{
+			free(disttable[i]);
+			free(ptable[i]);
+		}
+		free(ptable);
+		free(disttable);*/
+	}
+
+}
+
+void medoidseucl(struct list * lista,int length,int counter,struct node * centroids,int cent)
+{
+	int random;
+	struct node * temp;
+	struct node * temp2;
+	double ** disttable;
+	double ** ptable;
+	int i,j,z,flag;
+	double sum,sum2;
+	double distance,distancemin;
+	double x,r;
+	int ccount=0;//metritis kentroidon
+	disttable=malloc(2*sizeof(double*));
+	ptable=malloc(2*sizeof(double*));
+	srand(time(NULL));		
+	while(ccount<cent)
+	{
+		for(i=0;i<2;i++)
+		{
+			disttable[i]=malloc((counter-ccount-1)*sizeof(double));
+			ptable[i]=malloc((counter-ccount)*sizeof(double));
+		}
+		temp=lista->head;
+		if(ccount==0)
+		{
+			random=1+ (rand() /( RAND_MAX + 1.0))*(counter-1);
+			for(i=0;i<random;i++)
+			{
+				temp=temp->next;
+			}
+		}
+		else
+		{
+			while(temp->id!=r)
+				temp=temp->next;	
+		}
+		centroids[ccount]=*temp;
+		if(ccount==(cent-1))
+			break;
+		j=0;
+		temp2=lista->head;
+		if(ccount==0)
+		{
+			while(temp2!=NULL)
+			{
+				if(temp2->id!=centroids[ccount].id)
+				{
+					sum=0;
+					sum2=0;
+					for(z=0;z<length;z++)//typos euclidean
+					{
+						sum=temp2->key1[z] - centroids[ccount].key1[z];
+						sum=sum*sum;
+						sum2+=sum;
+						sum=0;
+					}
+					disttable[0][j]=temp2->id;
+					disttable[1][j]=sqrt(sum2);//upologismos apostasis
+					j++;
+				}
+				temp2=temp2->next;
+			}
+		}
+		else
+		{
+			while(temp2!=NULL)
+			{
+				flag=0;
+				distancemin=100000;//paradoxi
+				for(i=0;i<ccount;i++)
+				{
+					if(temp2->id==centroids[i].id)
+					{
+						flag=1;
+						break;
+					}
+				}
+				if(flag==0)
+				{
+					for(i=0;i<ccount;i++)
+					{
+						sum=0,sum2=0;
+						for(z=0;z<length;z++)//typos euclidean
+						{
+							sum=temp2->key1[z] - centroids[ccount].key1[z];
+							sum=sum*sum;
+							sum2+=sum;
+							sum=0;
+						}
+						distance=sqrt(sum2);
+						if(distance<distancemin)
+							distancemin=distance;
+					}
+					disttable[0][j]=temp2->id;
+					disttable[1][j]=distance;
+					j++;
+				}
+				temp2=temp2->next;
+			}
+		}
+		ccount++;
+		ptable[1][0]=0;
+		for(i=1;i<(counter-ccount);i++)
+		{
+			ptable[0][i]=disttable[0][i-1];
+			ptable[1][i]+=ptable[1][i-1]+(disttable[1][i-1] *disttable[1][i-1]);
+		}
+		x=1+ (rand() /( RAND_MAX + 1.0))*(ptable[1][counter-ccount-1]-1);
+		for(i=0;i<(counter-ccount);i++)
+		{
+			if(x<=ptable[1][i])
+			{
+				r=ptable[0][i];
+				break;
+			}
+			
+		}	
+		//printf("%f\n",r);
 		/*for(i=0;i<2;i++)
 		{
 			free(disttable[i]);
@@ -557,6 +858,211 @@ void medoidsham(struct list * lista,double ** matrix,int length,int counter,stru
 }
 
 
+
+
+
+/*void medoidseucl(struct list * lista,double ** matrix,int length,int counter,struct node * centroids,int cent)
+{
+	int random;
+	struct node * temp;
+	struct node * temp2;
+	double ** disttable;
+	double ** ptable;
+	int i,j,z;
+	double sum,sum2;
+	double distance;
+	double x,r;
+	int ccount=0;//metritis kentroidon
+	srand(time(NULL));		
+	while(ccount<cent)
+	{
+
+		disttable=malloc(2*sizeof(double*));
+		ptable=malloc(2*sizeof(double*));
+		for(i=0;i<2;i++)
+		{
+			disttable[i]=malloc((counter-ccount-1)*sizeof(double));
+			ptable[i]=malloc((counter-ccount)*sizeof(double));
+		}	
+		temp=lista->head;
+		if(ccount==0)
+		{		
+			random=1+ (rand() /( RAND_MAX + 1.0))*(counter-1);
+			for(i=0;i<random;i++)
+			{
+				temp=temp->next;
+			}
+		}
+		else
+		{
+			while(temp->id!=r)
+			{
+				temp=temp->next;	
+			}
+		}
+		centroids[ccount]=*temp;
+		if(ccount==(cent-1))
+			break;
+		j=0;
+		temp2=lista->head;
+		while(temp2!=NULL)
+		{
+			if(temp2->id!=centroids[ccount].id)
+			{
+				sum=0;
+				sum2=0;
+				for(z=0;z<length;z++)//typos euclidean
+				{
+					sum=temp->key1[z] - temp2->key1[z];
+					sum=sum*sum;
+					sum2+=sum;
+					sum=0;
+				}
+				disttable[0][j]=temp2->id;
+				disttable[1][j]=sqrt(sum2);//upologismos apostasis
+				j++;
+			}
+			temp2=temp2->next;
+		}
+		ccount++;
+		ptable[1][0]=0;
+		for(i=1;i<(counter-ccount);i++)
+		{
+			ptable[0][i]=disttable[0][i-1];
+			ptable[1][i]+=ptable[1][i-1]+(disttable[1][i-1] *disttable[1][i-1]);
+		}
+		x=1+ (rand() /( RAND_MAX + 1.0))*(ptable[1][counter-ccount-1]-1);
+		for(i=0;i<(counter-ccount);i++)
+		{
+			if(x<=ptable[1][i])
+			{
+				r=ptable[0][i];
+				break;
+			}
+			
+		}	
+		//printf("%f\n",r);
+		for(i=0;i<2;i++)
+		{
+			free(disttable[i]);
+			free(ptable[i]);
+		}
+		free(ptable);
+		free(disttable);
+	}
+
+}*/
+
+void medoidsmatr(struct list * lista,int counter,struct node * centroids,int cent)
+{
+	int random,flag;
+	double distance,distancemin;
+	struct node * temp;
+	struct node * temp2;
+	double ** disttable;
+	double ** ptable;
+	int i,j,z;
+	double x,r;
+	int ccount=0;//metritis kentroidon
+	srand(time(NULL));	
+	int pos[cent];	
+	while(ccount<cent)
+	{
+
+		disttable=malloc(2*sizeof(double*));
+		ptable=malloc(2*sizeof(double*));
+		for(i=0;i<2;i++)
+		{
+			disttable[i]=malloc((counter-ccount-1)*sizeof(double));
+			ptable[i]=malloc((counter-ccount)*sizeof(double));
+		}	
+		temp=lista->head;
+		if(ccount==0)
+		{		
+			random=1+ (rand() /( RAND_MAX + 1.0))*(counter-1);
+			for(i=0;i<random;i++)
+			{
+				temp=temp->next;
+
+			}
+			pos[ccount]=random;
+		}
+		else
+		{
+			pos[ccount]=0;
+			while(temp->id!=r)
+			{
+				pos[ccount]++;
+				temp=temp->next;	
+			}
+		}
+		centroids[ccount]=*temp;
+		if(ccount==(cent-1))
+			break;
+		j=0;
+		temp2=lista->head;
+		if(ccount==0)
+		{
+			while(temp2!=NULL)
+			{
+				if(temp2->id!=centroids[ccount].id)
+				{
+					disttable[0][j]=temp2->id;
+					disttable[1][j]=temp2->key1[pos[ccount]];//upologismos apostasis
+					j++;
+				}
+				temp2=temp2->next;
+			}
+		}
+		else
+		{
+			while(temp2!=NULL)
+			{
+				flag=0;
+				distancemin=100000;//paradoxi
+				for(i=0;i<ccount;i++)
+				{
+					if(temp2->id==centroids[i].id)
+					{
+						flag=1;
+						break;
+					}
+				}
+				if(flag==0)
+				{
+					for(z=0;z<ccount;z++)
+					{
+						distance=temp2->key1[pos[z]];
+						if(distance<distancemin)
+							distancemin=distance;
+					}
+
+
+				disttable[0][j]=temp2->id;
+				disttable[1][j]=distancemin;//upologismos apostasis
+				j++;
+				}
+				temp2=temp2->next;
+			}
+		}
+		ccount++;	
+		ptable[1][0]=0;
+		for(i=1;i<(counter-ccount);i++)
+		{
+			ptable[0][i]=disttable[0][i-1];
+			ptable[1][i]+=ptable[1][i-1]+(disttable[1][i-1] *disttable[1][i-1]);
+		}
+		x=1+ (rand() /( RAND_MAX + 1.0))*(ptable[1][counter-ccount-1]-1);
+		for(i=0;i<(counter-ccount);i++)
+		{
+			if(x<=ptable[1][i])
+			{
+				r=ptable[0][i];
+				break;
+			}	
+		}	
+	}
+}
 
 
 
