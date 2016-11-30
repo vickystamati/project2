@@ -16,18 +16,16 @@
 
 void lloydsupdate(struct clustlist * clist,struct list * lista,int cent,int choice,int length,int counter,double calc)//list opoiu dilist
 {
-	printf("mpika\n");
 	struct centlist * temp, *temp2;
 	struct node * upd,*cur1,*cur2;
 	struct clustlist * tempclist=malloc(cent*sizeof(struct clustlist));
-	int i,z,j,flag,end=0;
+	int i,z,j,flag,flag2,end=0;
 	double distance,distancemin;
 	double delj,calsum,change;
 	cur1=malloc(sizeof (struct node));
 	cur2=malloc(sizeof (struct node));
 	upd=malloc(sizeof (struct node));
 	calsum=calc;
-	printf("mpika1\n");
 	for(i=0;i<cent;i++)
 	{
 		tempclist[i].centro=malloc(sizeof(struct centlist));
@@ -38,14 +36,14 @@ void lloydsupdate(struct clustlist * clist,struct list * lista,int cent,int choi
 	}
 	while(end==0)
 	{
-		printf("mpika2\n");
+		
 		for(i=0;i<cent;i++)
 		{
 			flag=0;
 			temp=clist[i].head;
+			flag2=0;
 			while(temp!=NULL)
 			{
-					printf("mpika3\n");
 				cur1->id=temp->id;
 				if(choice==0)
 					cur1->key=temp->key;
@@ -55,7 +53,6 @@ void lloydsupdate(struct clustlist * clist,struct list * lista,int cent,int choi
 				temp2=clist[i].head;
 				while(temp2!=NULL)
 				{
-			printf("mpika4\n");
 					cur2->id=temp2->id;
 					if(choice==0)
 						cur2->key=temp2->key;
@@ -78,6 +75,7 @@ void lloydsupdate(struct clustlist * clist,struct list * lista,int cent,int choi
 				}
 				if(flag==0)
 				{
+					flag2=1;
 					upd->id=temp->id;
 					if(choice==0)
 						upd->key=temp->key;
@@ -94,6 +92,7 @@ void lloydsupdate(struct clustlist * clist,struct list * lista,int cent,int choi
 				{
 					if(distance<distancemin)
 					{
+						flag2=1;
 						upd->id=temp->id;
 						if(choice==0)
 							upd->key=temp->key;
@@ -109,10 +108,14 @@ void lloydsupdate(struct clustlist * clist,struct list * lista,int cent,int choi
 				flag++;
 				temp=temp->next;
 			}//telos while,exei vrei to "jalitero metoid"
-					printf("mpika kalo medoid\n");
-			change=approve(clist,lista,upd,cent,i,choice,length,calc);
+			//printf("edwwww %lu\n",upd->id);
+			if(flag2==0)
+				change=approve(clist,lista,upd,cent,i,choice,length,calc);
+			else
+				change=-1;
+			//printf("edwwww2\n");
 			if(change!=-1)
-			{		printf("mpika einai\n");
+			{
 				tempclist[i].centro->id=upd->id;
 				if(choice==0)
 					tempclist[i].centro->key=upd->key;
@@ -124,7 +127,6 @@ void lloydsupdate(struct clustlist * clist,struct list * lista,int cent,int choi
 			}
 			else
 			{
-						printf("mpika not\n");
 				tempclist[i].centro->id=clist[i].centro->id;
 				if(choice==0)
 					tempclist[i].centro->key=clist[i].centro->key;
@@ -141,18 +143,12 @@ void lloydsupdate(struct clustlist * clist,struct list * lista,int cent,int choi
 		{
 			if(clist[i].centro->id==tempclist[i].centro->id)
 				end++;
+			tempclist[i].head=NULL;
 		}
 		if(end==cent)
 		{
 			break;
 		}	
-		printf("mpika paw gia pamham\n");
-		for(i=0;i<cent;i++)
-		{
-			printf("to %d mallon %lu\n",i,tempclist[i].centro->id);
-			if(tempclist[i].head==NULL)
-				printf("adeua listaa reeeeee\n");
-		}
 		if(choice==0)
 			medpamham(lista,tempclist,length,counter,cent,choice);
 		else if(choice==1)
@@ -162,7 +158,6 @@ void lloydsupdate(struct clustlist * clist,struct list * lista,int cent,int choi
 		else if(choice==3)
 			medpammatr(lista,tempclist,length,counter,cent,choice);
 		change=calcj(tempclist,cent);
-				printf("mpik pamhamtelos\n");
 		if(change<calc)
 		{
 			freeclustlist(clist,cent,choice);
@@ -362,9 +357,7 @@ void claransloop(struct clustlist * clist,struct list * inlist,int cent,int choi
 		}
 	}
 	else if(dec[1]==1)
-	{
 		lshassign(inlist,clist,length,readcount,cent,choice,k,L);
-	}
 }
 
 
@@ -457,16 +450,19 @@ void freeclustlist(struct clustlist * clist,int cent,int choice)
 double approve(struct clustlist * clist,struct list * lista,struct node * upd,int cent,int place ,int choice,int length ,double calc)
 {
 	double tempj=0,distance;
-	int i,z;
+	int i,z,flag=0;
 	struct centlist * temp;
 	struct node * tempnode;
 	tempnode=malloc(sizeof(struct node));
-
+	printf("mpikaa\n");
 	for(i=0;i<cent;i++)
 	{
+	printf("mpikaa1\n");
 		temp=clist[i].head;
 		while(temp!=NULL)
 		{
+				printf("mpikaa2\n");
+			flag=1;
 			if(temp->id==upd->id)//an vrei to idio idio id ksaanevainei stin while
 			{
 				temp=temp->next;
@@ -490,9 +486,12 @@ double approve(struct clustlist * clist,struct list * lista,struct node * upd,in
 			}
 			else if(choice==3)
 			{
+				printf("mpikaa3\n");
 				tempnode->key1=temp->key1;		
 				distance=matrdistance(lista,tempnode,length,upd);
+				printf("mpikaa4\n");
 			}
+	printf("mpikaa5\n");
 			if(i==place)//ama einai sti lista tin opoia anikei
 			{
 				if(distance<=temp->distancenear)
@@ -513,6 +512,8 @@ double approve(struct clustlist * clist,struct list * lista,struct node * upd,in
 
 	}
 	free(tempnode);
+	if(flag==0)
+		return -1;
 	tempj+=calc;
 	if(tempj>0 && tempj<calc)
 		return tempj;

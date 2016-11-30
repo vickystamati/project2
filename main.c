@@ -19,7 +19,7 @@ int main(int argc, char *argv[])
 	FILE* fp;
 	FILE* fpw;
 	char *dfile,*qfile,*ofile; 
-	int i,j,check,choice,decide,readcount,length,k=4,L=5,s=2,cent=10;
+	int i,j,z,check,choice,decide,readcount,length,k=4,L=5,s=2,cent=10;
 	char buflen[bufSize];
 	double time_spentbr,time_spentlsh,time_spent,jsum,jsum2;
 	double ** indistmatr;
@@ -316,15 +316,28 @@ int main(int argc, char *argv[])
 			for(i=0;i<cent;i++)
 			{
 				clistclarans[i].centro=malloc(sizeof(struct node));
+				if(choice!=0)
+					clistclarans[i].centro->key1=malloc(length*sizeof(double));
 				clistclarans[i].head=NULL;
 			}
-
 			for(i=0;i<s;i++)
 			{
 				claransupdate(clist,inlist,cent,choice,length,readcount);
 				if(i!=0)
 					break;
 				swapclist(clistclarans,clist,cent,length,choice);
+				for(j=0;j<cent;j++)
+				{
+					clistclarans[j].centro->id=clist[j].centro->id;
+					if(choice==0)
+						clistclarans[j].centro->key=clist[j].centro->key;
+					else
+					{
+						for(z=0;z<length;z++)
+							clistclarans[j].centro->key1[z]=clist[j].centro->key1[z];
+					}
+					clist[j].head=NULL;
+				}
 				freeclustlist(clist,cent,choice);
 				claransloop(clist,inlist,cent,choice,length,readcount,decides,indistmatr,k,L);	
 			}

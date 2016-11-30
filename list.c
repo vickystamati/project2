@@ -53,7 +53,7 @@ int search(struct list *lista,long long find,long idfind,struct distlist * dilis
 		
 		if(new->distance!=length+1)//an exei allaksei to new->distance to pernaei sti lista
 		{	
-			count=insertnear(dilist,new);
+			count=insertnear(dilist,new,0);
 		}
 		else
 			free(new);
@@ -84,14 +84,13 @@ int search(struct list *lista,long long find,long idfind,struct distlist * dilis
 				new->nearid=current->id;
 				new->nearkey=current->key;
 				new->distance=d;
-				count+=insertnear(dilist,new);
+				count+=insertnear(dilist,new,0);
 			}
 			current = current->next;
 			free(incur);
 		}		
 	}	
 	free(chbin);
-	//printf("evala %d\n",count);
 	if(count!=0)
 		count=1;
 	return count;
@@ -155,15 +154,21 @@ void printdistancelist(struct distlist * lista,int length,FILE * fpw)
 
 
 
-int insertnear(struct distlist * dlist,struct distnode * new)
+int insertnear(struct distlist * dlist,struct distnode * new,int counter)
 {
-	int flag=0,z=0;
+	int flag=0,z=0,i;
 	if (dlist->head == NULL)//an head null kane eisagwgi
 	{
-		dlist->head=malloc(sizeof(struct node));
+		dlist->head=malloc(sizeof(struct distnode));
 		dlist->head->nearkey=new->nearkey;
 		dlist->head->nearid=new->nearid;
 		dlist->head->distance=new->distance;
+		if(counter!=0)
+		{
+			dlist->head->nearkey1=malloc(counter * sizeof(double));
+			for(i=0;i<counter;i++)
+				dlist->head->nearkey1[i]=new->nearkey1[i];
+		}
 		dlist->head->next=NULL;	
 		z=1;
 	}
@@ -185,10 +190,16 @@ int insertnear(struct distlist * dlist,struct distnode * new)
 		}
 		if(flag==0)//an den exei allaksei to flag kano eisagwgi
 		{
-			current->next=malloc(sizeof(struct node));
+			current->next=malloc(sizeof(struct distnode));
 			current->next->nearkey=new->nearkey;
 			current->next->nearid=new->nearid;
 			current->next->distance=new->distance;
+			if(counter!=0)
+			{
+				current->next->nearkey1=malloc(counter * sizeof(double));
+				for(i=0;i<counter;i++)
+					current->next->nearkey1[i]=new->nearkey1[i];
+			}
 			current->next->next=NULL;
 			z=1;	
 			
@@ -271,10 +282,10 @@ void insertcosine(struct list *lista,double * vector,long itemid,int counter)
 	}	
 }
 
-void searchcosine(struct list *lista,double* find,long idfind,struct distlist * dilist,int counter,double radius,int L)
+int searchcosine(struct list *lista,double* find,long idfind,struct distlist * dilist,int counter,double radius,int L)
 {
 	struct distnode * new;
-	int i;
+	int i,count=0;
 	double d,sum,sum1,sum2;
 	struct node *current = lista->head;
 	if(radius==0)
@@ -308,7 +319,7 @@ void searchcosine(struct list *lista,double* find,long idfind,struct distlist * 
 			current = current->next;
 		}
 		if(new->distance!=counter+1)//an exei allaksei to min kanei eisagwgi
-			insertnear(dilist,new);
+			count=insertnear(dilist,new,counter);
 		else
 			free(new);
 	}
@@ -337,12 +348,15 @@ void searchcosine(struct list *lista,double* find,long idfind,struct distlist * 
 					new->next=NULL;
 					new->nearid=current->id;
 					new->distance=d;
-					insertnear(dilist,new);
+					count+=insertnear(dilist,new,counter);
 				}
 			}
 			current = current->next;
 		}		
 	}
+	if(count!=0)
+		count=1;
+	return count;
 }
 void printdistancelistcosine(struct distlist * lista, FILE * fpw)
 {
@@ -396,79 +410,88 @@ void inserteuclidian(struct list * lista,double *vector, long itemid,long id,int
 	}	
 }
 
-void searcheuclidian(struct list *lista,double* find,long id,long idfind,struct distlist * dilist,int counter,double radius,int L)
+int searcheuclidian(struct list *lista,double* find,long id,long idfind,struct distlist * dilist,int counter,double radius,int L)
 {
 	struct distnode * new;
-	int i;
+	int i,count,k;
 	double d,sum,sum2;
 	struct node *current = lista->head;
-	if(current->findid==idfind || L<0)
-	{
-		if(radius==0)
-		{	
-			new = malloc(sizeof(struct distnode));
-			new->distance=10000000000;//paradoxi
-			new->next=NULL;
-			while (current!= NULL)
-			{
-				if(current->id==id) 
-				{
-					current = current->next;
-					continue;
-				}
-				sum=0;
-				sum2=0;
-				for(i=0;i<counter;i++)//typos euclidean
-				{
-					sum=current->key1[i] - find[i];
-					sum=sum*sum;
-					sum2+=sum;
-					sum=0;
-				}
-				d=sqrt(sum2);//upologismos apostasis
-				if(d<new->distance)//einai i mikroteri ekeini ti stigmi
-				{
-					new->nearid=current->id;
-					new->distance=d;
-				}
-				current = current->next;
-			}
-			if(new->distance!=10000000000)
-				insertnear(dilist,new);
-			else
-				free(new);
-		}
-		else//omoia an yparxei radius
+	if(radius==0)
+	{	
+		new = malloc(sizeof(struct distnode));
+		new->distance=10000000000;//paradoxi
+		new->next=NULL;
+		while (current!= NULL)
 		{
-			while (current!= NULL )
+			if(current->id==id) 
 			{
-				if(current->id==id) 
-				{
-					current = current->next;
-					continue;
-				}
-				sum=0;
-				sum2=0;
-				for(i=0;i<counter;i++)
-				{
-					sum+=current->key1[i] - find[i];
-					sum=sum*sum;
-					sum2+=sum;
-					sum=0;
-				}
-				d=sqrt(sum2);
-				if(d<=radius)//einai i mikroteri ekeini ti stigmi
-				{
-					new = malloc(sizeof(struct distnode));
-					new->next=NULL;
-					new->nearid=current->id;
-					new->distance=d;
-					insertnear(dilist,new);
-				}
 				current = current->next;
-			}		
+				continue;
+			}
+			sum=0;
+			sum2=0;
+			for(i=0;i<counter;i++)//typos euclidean
+			{
+				sum=current->key1[i] - find[i];
+				sum=sum*sum;
+				sum2+=sum;
+				sum=0;
+			}
+			d=sqrt(sum2);//upologismos apostasis
+			if(d<new->distance)//einai i mikroteri ekeini ti stigmi
+			{
+				new->nearid=current->id;
+				new->distance=d;
+				new->nearkey1=malloc(counter*sizeof(double));
+				for(k=0;k<counter;k++)
+					new->nearkey1[k]=current->key1[k];
+			}
+			current = current->next;
+		}
+		if(new->distance!=10000000000)
+			count=insertnear(dilist,new,counter);
+		else
+		{
+			free(new->nearkey1);
+			free(new);
 		}
 	}
+	else//omoia an yparxei radius
+	{
+		while (current!= NULL )
+		{
+			if(current->id==id) 
+			{
+				current = current->next;
+				continue;
+			}
+			sum=0;
+			sum2=0;
+			for(i=0;i<counter;i++)
+			{
+				sum+=current->key1[i] - find[i];
+				sum=sum*sum;
+				sum2+=sum;
+				sum=0;
+			}
+			d=sqrt(sum2);
+			if(d<=radius)//einai i mikroteri ekeini ti stigmi
+			{
+				new = malloc(sizeof(struct distnode));
+				new->next=NULL;
+				new->nearid=current->id;
+				new->distance=d;
+				new->nearkey1=malloc(counter*sizeof(double));
+				for(k=0;k<counter;k++)
+					new->nearkey1[k]=current->key1[k];
+				count+=insertnear(dilist,new,counter);
+			}
+			current = current->next;
+		}		
+	}
+	if(count!=0)
+		count=1;
+	return count;
 }
 void printdistancelisteuclidian(struct distlist * lista,FILE * fpw)
 {
@@ -488,8 +511,9 @@ void printdistancelisteuclidian(struct distlist * lista,FILE * fpw)
 		}
 	}
 }
-void searchmatrix(struct list*lista,double ** find,long itemid,struct  distlist * dilist, int counter,double radius,int L)
+int searchmatrix(struct list*lista,double * find,long itemid,struct  distlist * dilist, int counter,double radius,int L)
 {
+	int count=0,listcount=0;
 	struct distnode * new;
 	double d;
 	struct node *current = lista->head;
@@ -505,16 +529,18 @@ void searchmatrix(struct list*lista,double ** find,long itemid,struct  distlist 
 				current = current->next;
 				continue;
 			}
-			d=find[itemid-1][current->id-1];//paei sthn katallhlh thesi tou matrix kai ypologizei tin apostasi
+			d=find[listcount];//paei sthn katallhlh thesi tou matrix kai ypologizei tin apostasi
 			if(d<new->distance && d!=0)//einai i mikroteri ekeini ti stigmi
 			{
+				new->nearkey1=current->key1;
 				new->nearid=current->id;
 				new->distance=d;
 			}
+			listcount++;
 			current = current->next;
 		}
 		if(new->distance!=counter+1)
-			insertnear(dilist,new);
+			count=insertnear(dilist,new,counter);
 		else 
 			free(new);
 	}
@@ -525,20 +551,27 @@ void searchmatrix(struct list*lista,double ** find,long itemid,struct  distlist 
 			if(current->id==itemid) 
 			{
 				current = current->next;
+				listcount++;
 				continue;
 			}
-			d=find[itemid-1][current->id-1];
+			d=find[listcount];
+
 			if(d<=radius && d!=0)//einai i mikroteri ekeini ti stigmi
 			{
 				new = malloc(sizeof(struct distnode));
 				new->next=NULL;
 				new->nearid=current->id;
+				new->nearkey1=current->key1;
 				new->distance=d;
-				insertnear(dilist,new);
+				count+=insertnear(dilist,new,counter);
 			}
+			listcount++;
 			current = current->next;
 		}		
 	}
+	if(count!=0)
+		count=1;
+	return count;
 }
 
 void freehlist(struct list* lista)//kanei free ti lista twn backet apo to hashtable

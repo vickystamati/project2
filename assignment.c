@@ -466,12 +466,35 @@ void lshassign(struct list * inlist,struct clustlist * clist,int length,int read
 		//free(hasht);
 	
 	}
+	else if(choice==1)
+	{
+		for(i=1;i<k;i++)
+		{
+			hashsize*=2;
+		}
+		hasht = malloc(L * sizeof(struct hashtable));
+		createhash(hasht,L,hashsize);//dimiourgia hashtable
+		lshcosinit(hasht,clist,inlist,L,k,length,readcount,cent);
+	}
 	else if(choice==2)
 	{
 		hashsize=readcount/16;
 		hasht = malloc(L * sizeof(struct hashtable));
 		createhash(hasht,L,hashsize);//dimiourgia hashtable
 		lsheuclinit(hasht,clist,inlist,L,k,length,readcount,cent);
+		//freehasht(hasht,L,hashsize);
+		//free(hasht);
+	
+	}
+	else if(choice==3)
+	{
+		for(i=1;i<k;i++)
+		{
+			hashsize*=2;
+		}
+		hasht = malloc(L * sizeof(struct hashtable));
+		createhash(hasht,L,hashsize);//dimiourgia hashtable
+		lshmatrinit(hasht,clist,inlist,L,k,length,readcount,cent);
 		//freehasht(hasht,L,hashsize);
 		//free(hasht);
 	
