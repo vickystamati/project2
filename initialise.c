@@ -15,9 +15,8 @@
 
 void inserthamm(struct list * lista,char * dfile)
 {
-	struct node * new;
 	FILE* fp;
-	int counter=0,i,j,z;	
+	int counter=0,i,z;	
 	char bufinteger[bufSize],buflen[bufSize],buf[bufSize];
 	unsigned long long number;
 	unsigned long itemid;
@@ -53,9 +52,8 @@ void inserthamm(struct list * lista,char * dfile)
 
 void insertcos(struct list * lista,char * dfile,int counter)
 {
-	struct node * new;
 	FILE* fp;	
-	int i,j,z;
+	int i,z;
 	char bufint[bufSize],buflen[bufSize];
 	unsigned long itemid;
 	char * pitemid;
@@ -95,11 +93,10 @@ void insertcos(struct list * lista,char * dfile,int counter)
 
 void insertmatr(struct list * lista,char * dfile,int counter)
 {
-	struct node * new;
 	FILE* fp;	
 	char s[2] = ",";
 	char * tok;
-	int i,j,z;
+	int i,z;
 	char bufint[bufSize],buflen[bafSize],buf[bufSize];
 	unsigned long itemid;
 	char * pitemid;
@@ -146,7 +143,6 @@ int getmatritems(char *dfile)
 	FILE * fp;
 	char s[2] = ",";
 	char * tok;
-	int i;
 	char buflen[bafSize];
 	int readcount=0;
 	if ((fp = fopen((dfile), "r")) == NULL)
@@ -154,7 +150,6 @@ int getmatritems(char *dfile)
 		printf("Empty file!\n");
 		return 0;
 	}
-	i=0;
 	readcount=0;
 	fscanf(fp, "%s", buflen);
 	fscanf(fp, "%s", buflen);
@@ -175,7 +170,6 @@ int getmatritems(char *dfile)
 int getnumitems(char *dfile)
 {
 	FILE * fp;
-	int i;
 	char buflen[bufSize];
 	int readcount=0;
 	if ((fp = fopen((dfile), "r")) == NULL)
@@ -183,7 +177,6 @@ int getnumitems(char *dfile)
 		printf("Empty file!\n");
 		return 0;
 	}
-	i=0;
 	readcount=0;
 	while (fscanf(fp, "%s", buflen) != EOF)//vazei sto counter ta stoixeia tou kathe item
 	{
@@ -198,7 +191,6 @@ int getnumitems(char *dfile)
 
 int gethamlength(char * dfile)
 {
-	int i;
 	int length;
 	char buf[bufSize];
 	FILE * fp;
@@ -207,7 +199,6 @@ int gethamlength(char * dfile)
 		printf("Empty file!\n");
 		return 0;
 	}
-	i=0;
 	length=0;
 	while (fscanf(fp, "%s", buf) != EOF)//vazei sto counter ta stoixeia tou kathe item
 	{
@@ -307,7 +298,6 @@ void concentratecos(struct list * lista,double ** matrix,int length,int counter,
 	struct node * temp2;
 	int sum,sum1,sum2;
 	int i,j,z;
-	double distance;
 	temp=lista->head;
 	i=0;
 	while(temp!=NULL)

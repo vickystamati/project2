@@ -18,12 +18,12 @@
 void claraf(struct clustlist * clist , struct list * inlist,int length,int readcount,int choice,int cent)
 {
 	int i,j,z,m,counter;
-	int random,nnum,s,flag;
+	int random,nnum,flag;
 	int randmatr[cent];
 	int *listmatr;
 	double jval,jtemp;
 	struct clustlist * clisttemp,*clistfinal;
-	struct centlist * centtemp,*t2;
+	struct centlist * centtemp;
 	struct node * temp;
 	struct list * lista=malloc(sizeof(struct list));
 	lista->head=NULL;

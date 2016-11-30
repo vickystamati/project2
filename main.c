@@ -18,14 +18,14 @@ int main(int argc, char *argv[])
 {
 	FILE* fp;
 	FILE* fpw;
-	char *dfile,*qfile,*ofile; 
+	char *dfile,*ofile; 
 	int i,j,z,check,choice,decide,readcount,length,k=4,L=5,s=2,cent=10;
 	char buflen[bufSize];
 	double time_spentbr,time_spentlsh,time_spent,jsum,jsum2;
 	double ** indistmatr;
 	int decides[3];
 	struct list * inlist;
-	struct node * centroids,*centroidsclarans;
+	struct node * centroids;
 	struct clustlist * clist,*clistclarans;
 	clock_t beginlsh,endlsh,beginbr,endbr,end,begin;
 	srand(time(NULL));

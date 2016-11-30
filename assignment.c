@@ -141,7 +141,6 @@ void medpamham(struct list * lista,struct clustlist * clist,int length,int count
 	int i,j,z;
 	int flag;
 	char *token,*token2;
-	int centplace[cent];
 	double **pammatr;
 	double distance;
 	struct node * temp;
@@ -200,7 +199,6 @@ void medpamcos(struct list * lista,struct clustlist * clist,int length,int count
 	int i,j,z;
 	int flag;
 	double sum,sum1,sum2;
-	int centplace[cent];
 	double **pammatr;
 	double distance;
 	struct node * temp;
@@ -258,8 +256,7 @@ void medpameucl(struct list * lista,struct clustlist * clist,int length,int coun
 {
 	int i,j,z;
 	int flag;
-	double sum,sum1,sum2;
-	int centplace[cent];
+	double sum,sum2;
 	double **pammatr;
 	double distance;
 	struct node * temp;
@@ -309,7 +306,6 @@ void medpammatr(struct list * lista,struct clustlist * clist,int length,int coun
 {
 	int i,j,z;
 	int flag;
-	double sum,sum1,sum2;
 	int centplace[cent];
 	double **pammatr;
 	double distance;
@@ -367,7 +363,7 @@ double hamdistance(struct node *temp,int length,struct node *temp2)
 {
 	char token[65],token2[65];
 	double distance;
-	int j,z;
+	int z;
 	//token=malloc((length+1)*sizeof(char));
 	turnintobinary(temp->key ,length ,token);
 	distance=0;
@@ -387,7 +383,7 @@ double hamdistance(struct node *temp,int length,struct node *temp2)
 double cosdistance(struct node *temp,int length,struct node *temp2)
 {
 	double distance,sum,sum1,sum2;
-	int j,z;
+	int z;
 	distance=0;
 	for(z=0;z<length;z++)
 	{
@@ -413,8 +409,8 @@ double cosdistance(struct node *temp,int length,struct node *temp2)
 
 double eucldistance(struct node *temp,int length,struct node *temp2)
 {
-	double distance,sum,sum1,sum2;
-	int j,z;
+	double distance,sum,sum2;
+	int z;
 	distance=0;
 	sum=0;
 	sum2=0;
@@ -449,7 +445,6 @@ void lshassign(struct list * inlist,struct clustlist * clist,int length,int read
 	int i;
 	long hashsize=2;
 	int temphash=readcount/8;
-	double rad=100000;//paradoxi
 	if(choice==0)
 	{
 		for(i=1;i<k;i++)

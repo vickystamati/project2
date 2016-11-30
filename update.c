@@ -19,13 +19,12 @@ void lloydsupdate(struct clustlist * clist,struct list * lista,int cent,int choi
 	struct centlist * temp, *temp2;
 	struct node * upd,*cur1,*cur2;
 	struct clustlist * tempclist=malloc(cent*sizeof(struct clustlist));
-	int i,z,j,flag,flag2,end=0;
+	int i,z,flag,flag2,end=0;
 	double distance,distancemin;
-	double delj,calsum,change;
+	double change;
 	cur1=malloc(sizeof (struct node));
 	cur2=malloc(sizeof (struct node));
 	upd=malloc(sizeof (struct node));
-	calsum=calc;
 	for(i=0;i<cent;i++)
 	{
 		tempclist[i].centro=malloc(sizeof(struct centlist));
@@ -181,12 +180,10 @@ void lloydsupdate(struct clustlist * clist,struct list * lista,int cent,int choi
 
 void clarans(struct clustlist * clist,struct list * lista,int cent,int choice,int length,int counter,int * combmatr,int q)
 {
-	struct centlist * temp, *temp2;
-	struct node * upd,*cur1,*cur2;
+	struct node *cur1;
 	struct clustlist * clistfinal, *clisttemp;
-	long idtable[cent];
-	int i,z,j,flag,pos1,pos2;
-	double delj,calsum,change;
+	int i,z,j,pos1,pos2;
+	double delj,calsum;
 	cur1=malloc(sizeof (struct node));
 	delj=calcj(clist,cent);
 	clistfinal=malloc(cent*sizeof(struct clustlist));
@@ -264,9 +261,8 @@ void clarans(struct clustlist * clist,struct list * lista,int cent,int choice,in
 
 void claransupdate(struct clustlist * clist,struct list * lista,int cent,int choice,int length,int counter)
 {
-	int i,j,q,try,x,flag,s;
+	int i,j,q,try,x,flag;
 	int *combmatr;
-	s=2;
 	for(i=0;i<2;i++)
 	{
 		try=0.12 * cent *(counter-cent);
@@ -450,7 +446,7 @@ void freeclustlist(struct clustlist * clist,int cent,int choice)
 double approve(struct clustlist * clist,struct list * lista,struct node * upd,int cent,int place ,int choice,int length ,double calc)
 {
 	double tempj=0,distance;
-	int i,z,flag=0;
+	int i,flag=0;
 	struct centlist * temp;
 	struct node * tempnode;
 	tempnode=malloc(sizeof(struct node));

@@ -16,12 +16,11 @@
 
 void lshhaminit(struct hashtable ** hasht,struct clustlist * clist,struct list * inlist,int L,int k,int length,int readcount,int cent)
 {
-	struct centlist * tata;
-	struct node * temp,*insertnode;
+	struct node * temp;
 	char * token,token2[k];
 	int ** gfun;
 	int random,i,j,z,loop,tloop;
-	double ** pammatr,dist,distmin,radius;
+	double ** pammatr,radius;
 	struct distlist * dilist;
 	long long binarynum,decimalnum;
 	radius=firstrad(clist,length,cent,0,inlist);
@@ -243,14 +242,12 @@ void lshcosinit(struct hashtable ** hasht,struct clustlist * clist,struct list *
 
 void lsheuclinit(struct hashtable ** hasht,struct clustlist * clist,struct list * inlist,int L,int k,int length,int readcount,int cent)
 {
-	struct node * temp,*insertnode;
-	char * token,token2[k];
+	struct node * temp;
 	int ** gfun,*rfix;
 	int random,i,j,t,z,sum,fsum,loop,tloop;
-	double ** pammatr,dist,distmin,**vfix,*tfix,ran,y1,y2,w=4,radius;
+	double ** pammatr,**vfix,*tfix,ran,y1,y2,w=4,radius;
 	struct distlist * dilist;
-	long long binarynum,decimalnum;
-	long modnum=1,idsum,idfind,hashsize;
+	long modnum=1,idfind,hashsize;
 	radius=firstrad(clist,length,cent,2,inlist);
 	hashsize=readcount/16;
 	if(k>10 && L>30)//elegxos gia k kai L
@@ -380,7 +377,7 @@ void lshmatrinit(struct hashtable ** hasht,struct clustlist * clist,struct list 
 {
 	struct node * temp;
 	struct distlist * dilist;
-	int i,j,z,**hmat,**gfun,sum=0,tloop,loop,x=3;
+	int i,j,z,**hmat,**gfun,sum=0,tloop;
 	double *tmat,**summid,**matrix,radius,**pammatr;
 	char token[k];
 	long long decimalnum,binarynum;
@@ -647,10 +644,10 @@ void erasedouble(struct distlist * dlist,int cent,int choice)
 				while(temp2!=NULL)
 				{
 					if(temp1->nearid==temp2->nearid)
-						if(temp1->distance<temp2->distance)
+					{	if(temp1->distance<temp2->distance)
 							deletedistnode(&dlist[j],temp2,choice);
 						else
-							deletedistnode(&dlist[i],temp1,choice);
+							deletedistnode(&dlist[i],temp1,choice);}
 					temp2=temp2->next;
 				}
 				temp1=temp1->next;
@@ -759,7 +756,6 @@ double firstrad(struct clustlist * clist,int length,int cent,int choice,struct l
 {
 	int i,j;
 	double distance,distancemin=1000000;
-	struct node * temp, * temp2;
 	for(i=0;i<cent;i++)
 	{
 		for(j=i+1;j<cent;j++)
