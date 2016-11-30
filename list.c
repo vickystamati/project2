@@ -8,14 +8,15 @@
 #include "assignment.h"
 #include"update.h"
 #include"clara.h"
+#include"lsh.h"
 
-void search(struct list *lista,long long find,long idfind,struct distlist * dilist,int length,double radius,int L)
+int search(struct list *lista,long long find,long idfind,struct distlist * dilist,int length,double radius,int L)
 {
 	struct distnode * new;
 	char * chbin,* incur;//binary ws simvoloseira
 	chbin=malloc((length+1)*sizeof(char));//desmevei oso to legethos ton stoixeion tou arxeiou
 	turnintobinary(find,length,chbin);//metatropi long se binary
-	int i,loop=0;
+	int i,count=0;
 	double d;
 	struct node *current = lista->head;
 	if(radius==0)//an i aktina einai 0
@@ -23,7 +24,7 @@ void search(struct list *lista,long long find,long idfind,struct distlist * dili
 		new = malloc(sizeof(struct distnode));
 		new->distance=length+1;//paradoxi, max+1 diaforetika
 		new->next=NULL;
-		while (current!= NULL && loop!=3*L) //mexri 3L epanalipseis
+		while (current!= NULL) //mexri 3L epanalipseis
 		{
 			if(current->id==idfind) //an einai o eaytos tou
 			{
@@ -51,13 +52,15 @@ void search(struct list *lista,long long find,long idfind,struct distlist * dili
 		}
 		
 		if(new->distance!=length+1)//an exei allaksei to new->distance to pernaei sti lista
-			insertnear(dilist,new);
+		{	
+			count=insertnear(dilist,new);
+		}
 		else
 			free(new);
 	}
 	else
 	{
-		while (current!= NULL && loop!=3*L)
+		while (current!= NULL)
 		{
 			if(current->id==idfind) 
 			{
@@ -81,13 +84,17 @@ void search(struct list *lista,long long find,long idfind,struct distlist * dili
 				new->nearid=current->id;
 				new->nearkey=current->key;
 				new->distance=d;
-				insertnear(dilist,new);
+				count+=insertnear(dilist,new);
 			}
 			current = current->next;
 			free(incur);
 		}		
 	}	
 	free(chbin);
+	//printf("evala %d\n",count);
+	if(count!=0)
+		count=1;
+	return count;
 }
 
 void findmin(struct distlist * dilist,int flag,FILE* fpw)
@@ -148,14 +155,17 @@ void printdistancelist(struct distlist * lista,int length,FILE * fpw)
 
 
 
-void insertnear(struct distlist * dlist,struct distnode * new)
+int insertnear(struct distlist * dlist,struct distnode * new)
 {
-	int flag=0;
+	int flag=0,z=0;
 	if (dlist->head == NULL)//an head null kane eisagwgi
 	{
-		dlist->head=new;
+		dlist->head=malloc(sizeof(struct node));
+		dlist->head->nearkey=new->nearkey;
+		dlist->head->nearid=new->nearid;
+		dlist->head->distance=new->distance;
 		dlist->head->next=NULL;	
-
+		z=1;
 	}
 	else
 	{
@@ -175,27 +185,26 @@ void insertnear(struct distlist * dlist,struct distnode * new)
 		}
 		if(flag==0)//an den exei allaksei to flag kano eisagwgi
 		{
-			current->next = new;
+			current->next=malloc(sizeof(struct node));
+			current->next->nearkey=new->nearkey;
+			current->next->nearid=new->nearid;
+			current->next->distance=new->distance;
 			current->next->next=NULL;
-
+			z=1;	
+			
 		}	
 	}
+	free(new);
+	return z;
 }
 
 void insert(struct list * lista,long long binary,long itemid)
 {
-	struct node * new;
-	new = malloc(sizeof(struct node));
-	if(new == NULL)
-	{
-		printf("Failed to allocate memory!\n");
-	}
-	new -> id=itemid;
-	new -> key =binary;
-	new -> next = NULL;
 	if (lista->head == NULL)
 	{
-		lista->head=new;
+		lista->head=malloc(sizeof(struct node));
+		lista->head->id=itemid;
+		lista->head->key=binary;
 		lista->head->next=NULL;	
 	}
 	else
@@ -205,7 +214,10 @@ void insert(struct list * lista,long long binary,long itemid)
 		{
 			current = current->next;
 		}
-		current->next = new;
+		current->next=malloc(sizeof(struct node));
+		current->next->id=itemid;
+		current->next->key=binary;
+		current->next->next=NULL;	
 	}	
 }
 
@@ -264,14 +276,13 @@ void searchcosine(struct list *lista,double* find,long idfind,struct distlist * 
 	struct distnode * new;
 	int i;
 	double d,sum,sum1,sum2;
-	int loop=0;
 	struct node *current = lista->head;
 	if(radius==0)
 	{
 		new = malloc(sizeof(struct distnode));
 		new->distance=counter+1;//paradoxi, max+1 diaforetika
 		new->next=NULL;
-		while (current!= NULL && loop!=3*L)
+		while (current!= NULL)
 		{
 			if(current->id==idfind) 
 			{
@@ -285,7 +296,6 @@ void searchcosine(struct list *lista,double* find,long idfind,struct distlist * 
 				sum1+=current->key1[i] * current->key1[i];
 				sum2+=find[i] * find[i];
 			}
-			loop++;
 			if(sum1!=0 && sum2!=0)//epeidi einai riza, elegxos na einai diaforetiko ap to 0
 			{
 				d=1-(sum/sqrt(sum1 * sum2));
@@ -304,7 +314,7 @@ void searchcosine(struct list *lista,double* find,long idfind,struct distlist * 
 	}
 	else//omoia an radius!=0
 	{
-		while (current!= NULL && loop!=3*L) //isws thelei current->next
+		while (current!= NULL) //isws thelei current->next
 		{
 			if(current->id==idfind) 
 			{
@@ -318,7 +328,6 @@ void searchcosine(struct list *lista,double* find,long idfind,struct distlist * 
 				sum1+=current->key1[i] * current->key1[i];
 				sum2+=find[i] * find[i];
 			}
-			loop++;
 			if(sum1!=0 && sum2!=0)
 			{
 				d=1-(sum/(sqrt(sum1) * sqrt(sum2)));
@@ -392,7 +401,6 @@ void searcheuclidian(struct list *lista,double* find,long id,long idfind,struct 
 	struct distnode * new;
 	int i;
 	double d,sum,sum2;
-	int loop=0;
 	struct node *current = lista->head;
 	if(current->findid==idfind || L<0)
 	{
@@ -401,7 +409,7 @@ void searcheuclidian(struct list *lista,double* find,long id,long idfind,struct 
 			new = malloc(sizeof(struct distnode));
 			new->distance=10000000000;//paradoxi
 			new->next=NULL;
-			while (current!= NULL && loop!=3*L)
+			while (current!= NULL)
 			{
 				if(current->id==id) 
 				{
@@ -418,7 +426,6 @@ void searcheuclidian(struct list *lista,double* find,long id,long idfind,struct 
 					sum=0;
 				}
 				d=sqrt(sum2);//upologismos apostasis
-				loop++;
 				if(d<new->distance)//einai i mikroteri ekeini ti stigmi
 				{
 					new->nearid=current->id;
@@ -433,7 +440,7 @@ void searcheuclidian(struct list *lista,double* find,long id,long idfind,struct 
 		}
 		else//omoia an yparxei radius
 		{
-			while (current!= NULL && loop!=3*L)
+			while (current!= NULL )
 			{
 				if(current->id==id) 
 				{
@@ -450,7 +457,6 @@ void searcheuclidian(struct list *lista,double* find,long id,long idfind,struct 
 					sum=0;
 				}
 				d=sqrt(sum2);
-				loop++;
 				if(d<=radius)//einai i mikroteri ekeini ti stigmi
 				{
 					new = malloc(sizeof(struct distnode));
@@ -486,21 +492,19 @@ void searchmatrix(struct list*lista,double ** find,long itemid,struct  distlist 
 {
 	struct distnode * new;
 	double d;
-	int loop=0;
 	struct node *current = lista->head;
 	if(radius==0)
 	{
 		new = malloc(sizeof(struct distnode));
 		new->distance=counter+1;//paradoxi, max+1 diaforetika
 		new->next=NULL;
-		while (current!= NULL && loop!=3*L)
+		while (current!= NULL)
 		{
 			if(current->id==itemid) 
 			{
 				current = current->next;
 				continue;
 			}
-			loop++;
 			d=find[itemid-1][current->id-1];//paei sthn katallhlh thesi tou matrix kai ypologizei tin apostasi
 			if(d<new->distance && d!=0)//einai i mikroteri ekeini ti stigmi
 			{
@@ -516,14 +520,13 @@ void searchmatrix(struct list*lista,double ** find,long itemid,struct  distlist 
 	}
 	else
 	{
-		while (current!= NULL && loop!=3*L)
+		while (current!= NULL )
 		{
 			if(current->id==itemid) 
 			{
 				current = current->next;
 				continue;
 			}
-			loop++;
 			d=find[itemid-1][current->id-1];
 			if(d<=radius && d!=0)//einai i mikroteri ekeini ti stigmi
 			{
@@ -537,6 +540,7 @@ void searchmatrix(struct list*lista,double ** find,long itemid,struct  distlist 
 		}		
 	}
 }
+
 void freehlist(struct list* lista)//kanei free ti lista twn backet apo to hashtable
 {
 	struct node* temp;

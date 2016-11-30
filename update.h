@@ -5,5 +5,5 @@ double approve(struct clustlist *,struct list *,struct node *,int,int,int,int ,d
 void silhouette(struct clustlist *,struct list * ,int ,int,int );
 void claransupdate(struct clustlist * ,struct list * ,int ,int ,int ,int );
 void clarans(struct clustlist * ,struct list * ,int ,int ,int ,int ,int*,int );
-void claransloop(struct clustlist * ,struct list * ,int ,int ,int ,int,int *,double ** );
+void claransloop(struct clustlist * ,struct list * ,int ,int ,int ,int,int *,double **,int,int );
 int modint (int , int );

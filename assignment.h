@@ -30,3 +30,4 @@ double hamdistance(struct node *,int ,struct node *);
 double cosdistance(struct node *,int ,struct node *);
 double eucldistance(struct node *,int ,struct node *);
 double matrdistance(struct list *,struct node *,int ,struct node *);
+void lshassign(struct list * inlist,struct clustlist * clist,int length,int readcount,int cent,int choice,int k,int L);

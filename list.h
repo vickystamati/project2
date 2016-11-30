@@ -1,6 +1,6 @@
 struct distnode{
-	 long long nearkey;
-	 long nearid;
+	long long nearkey;
+	long nearid;
 	double distance;
 	struct distnode *next;
 };
@@ -14,7 +14,7 @@ struct node{
 	long long key;//binary
 	long  id;//itemid
 	long findid;//ID P
-	double dist;
+	int found;
 	double * key1;
 	struct node * next;
 };
@@ -26,9 +26,9 @@ struct list{
 
 void createdlist(struct distlist * );
 void insert(struct list * ,long long ,long );
-void insertnear(struct distlist * ,struct distnode * );
+int insertnear(struct distlist * ,struct distnode * );
 void findmin(struct distlist * ,int,FILE*);
-void search(struct list * ,long long,long ,struct distlist * ,int,double,int);
+int search(struct list * ,long long,long ,struct distlist * ,int,double,int);
 void turnintobinary( long long ,int ,char* );
 void printdistancelist(struct distlist * ,int,FILE*);
 void insertcosine(struct list *,double * , long,int);

@@ -8,6 +8,7 @@
 #include "assignment.h"
 #include"update.h"
 #include"clara.h"
+#include"lsh.h"
 #include<time.h>
 #define bufSize 2048
 #define bafSize 8192
@@ -264,13 +265,13 @@ void concentrateham(struct list * lista,double ** matrix,int length,int counter,
 	while(temp!=NULL)
 	{
 		j=0;
-		token=malloc(length*sizeof(char));
+		token=malloc((length+1)*sizeof(char));
 		turnintobinary(temp->key ,length ,token);
 		temp2=lista->head;
 		while(temp2!=NULL && i>j)
 		{
 			distance=0;
-			token2=malloc(length*sizeof(char));
+			token2=malloc((length+1)*sizeof(char));
 			turnintobinary(temp2->key ,length ,token2);
 			for(z=0;z<length;z++)
 			{
@@ -437,12 +438,6 @@ void concentfinal(struct list * lista,double ** matrix,int counter,struct node *
 		temp=temp->next;
 	}
 	bubble_sort2d(summax, counter);
-	/*for(i=0;i<counter;i++)
-	{
-
-			printf("buble %f\n",summax[i][1]);
-		
-	}*/
 	for(i=0;i<cent;i++)
 	{
 		temp=lista->head;
@@ -452,6 +447,9 @@ void concentfinal(struct list * lista,double ** matrix,int counter,struct node *
 		}
 		centroids[i]=*temp;	
 	}
+	for(i=0;i<counter;i++)
+		free(summax[i]);
+	free(summax);
 }
 
 void medoidsham(struct list * lista,int length,int counter,struct node * centroids,int cent)
@@ -459,24 +457,17 @@ void medoidsham(struct list * lista,int length,int counter,struct node * centroi
 	int random;
 	struct node * temp;
 	struct node * temp2;
-	double ** disttable;
-	double ** ptable;
 	int i,j,z;
 	double distance,distancemin;
 	char * token, * token2;
 	double x,r;
 	int flag;
 	int ccount=0;//metritis kentroidon
-	srand(time(NULL));	
-	disttable=malloc(2*sizeof(double*));
-	ptable=malloc(2*sizeof(double*));	
+	double disttable[2][counter];
+	double ptable[2][counter];
+	srand(time(NULL));		
 	while(ccount<cent)
 	{	
-		for(i=0;i<2;i++)
-		{
-			disttable[i]=malloc((counter-ccount-1)*sizeof(double));
-			ptable[i]=malloc((counter-ccount)*sizeof(double));
-		}	
 		temp=lista->head;
 		if(ccount==0)
 		{
@@ -498,14 +489,14 @@ void medoidsham(struct list * lista,int length,int counter,struct node * centroi
 		j=0;
 		if(ccount==0)
 		{
-			token=malloc(length*sizeof(char));
+			token=malloc((length+1)*sizeof(char));
 			turnintobinary(temp->key ,length ,token);
 			while(temp2!=NULL)
 			{
 				distance=0;
 				if(temp2->id!=centroids[ccount].id)
 				{
-					token2=malloc(length*sizeof(char));
+					token2=malloc((length+1)*sizeof(char));
 					turnintobinary(temp2->key ,length ,token2);
 					for(z=0;z<length;z++)
 					{
@@ -537,11 +528,11 @@ void medoidsham(struct list * lista,int length,int counter,struct node * centroi
 				}
 				if(flag==0)
 				{
-					token2=malloc(length*sizeof(char));
+					token2=malloc((length+1)*sizeof(char));
 					turnintobinary(temp2->key ,length ,token2);
 					for(i=0;i<ccount;i++)
 					{
-						token=malloc(length*sizeof(char));
+						token=malloc((length+1)*sizeof(char));
 						turnintobinary(centroids[i].key ,length ,token);
 						distance=0;
 						for(z=0;z<length;z++)
@@ -578,17 +569,10 @@ void medoidsham(struct list * lista,int length,int counter,struct node * centroi
 				break;
 			}
 			
-		}	
-		//printf("%f\n",r);
-		for(i=0;i<2;i++)
-		{
-			//free(disttable[i]);
-			//free(ptable[i]);
 		}
-		/*free(ptable);
-		free(disttable);*/
+		memset(ptable,0,sizeof(ptable));
+		memset(disttable,0,sizeof(disttable));
 	}
-
 }
 
 void medoidscos(struct list * lista,int length,int counter,struct node * centroids,int cent)
@@ -596,23 +580,16 @@ void medoidscos(struct list * lista,int length,int counter,struct node * centroi
 	int random;
 	struct node * temp;
 	struct node * temp2;
-	double ** disttable;
-	double ** ptable;
+	double disttable[2][counter];
+	double ptable[2][counter];
 	int i,j,z,flag;
 	double sum,sum1,sum2;
 	double distance,distancemin;
 	double x,r;
 	int ccount=0;//metritis kentroidon
-	disttable=malloc(2*sizeof(double*));
-	ptable=malloc(2*sizeof(double*));
 	srand(time(NULL));		
 	while(ccount<cent)
 	{
-		for(i=0;i<2;i++)
-		{
-			disttable[i]=malloc((counter-ccount-1)*sizeof(double));
-			ptable[i]=malloc((counter-ccount)*sizeof(double));
-		}
 		temp=lista->head;
 		if(ccount==0)
 		{
@@ -716,14 +693,8 @@ void medoidscos(struct list * lista,int length,int counter,struct node * centroi
 			}
 			
 		}	
-		//printf("%f\n",r);
-		/*for(i=0;i<2;i++)
-		{
-			free(disttable[i]);
-			free(ptable[i]);
-		}
-		free(ptable);
-		free(disttable);*/
+		memset(ptable,0,sizeof(ptable));
+		memset(disttable,0,sizeof(disttable));
 	}
 
 }
@@ -733,23 +704,16 @@ void medoidseucl(struct list * lista,int length,int counter,struct node * centro
 	int random;
 	struct node * temp;
 	struct node * temp2;
-	double ** disttable;
-	double ** ptable;
+	double  disttable[2][counter];
+	double ptable[2][counter];
 	int i,j,z,flag;
 	double sum,sum2;
 	double distance,distancemin;
 	double x,r;
 	int ccount=0;//metritis kentroidon
-	disttable=malloc(2*sizeof(double*));
-	ptable=malloc(2*sizeof(double*));
 	srand(time(NULL));		
 	while(ccount<cent)
 	{
-		for(i=0;i<2;i++)
-		{
-			disttable[i]=malloc((counter-ccount-1)*sizeof(double));
-			ptable[i]=malloc((counter-ccount)*sizeof(double));
-		}
 		temp=lista->head;
 		if(ccount==0)
 		{
@@ -845,14 +809,8 @@ void medoidseucl(struct list * lista,int length,int counter,struct node * centro
 			}
 			
 		}	
-		//printf("%f\n",r);
-		/*for(i=0;i<2;i++)
-		{
-			free(disttable[i]);
-			free(ptable[i]);
-		}
-		free(ptable);
-		free(disttable);*/
+		memset(ptable,0,sizeof(ptable));
+		memset(disttable,0,sizeof(disttable));
 	}
 
 }
@@ -861,97 +819,6 @@ void medoidseucl(struct list * lista,int length,int counter,struct node * centro
 
 
 
-/*void medoidseucl(struct list * lista,double ** matrix,int length,int counter,struct node * centroids,int cent)
-{
-	int random;
-	struct node * temp;
-	struct node * temp2;
-	double ** disttable;
-	double ** ptable;
-	int i,j,z;
-	double sum,sum2;
-	double distance;
-	double x,r;
-	int ccount=0;//metritis kentroidon
-	srand(time(NULL));		
-	while(ccount<cent)
-	{
-
-		disttable=malloc(2*sizeof(double*));
-		ptable=malloc(2*sizeof(double*));
-		for(i=0;i<2;i++)
-		{
-			disttable[i]=malloc((counter-ccount-1)*sizeof(double));
-			ptable[i]=malloc((counter-ccount)*sizeof(double));
-		}	
-		temp=lista->head;
-		if(ccount==0)
-		{		
-			random=1+ (rand() /( RAND_MAX + 1.0))*(counter-1);
-			for(i=0;i<random;i++)
-			{
-				temp=temp->next;
-			}
-		}
-		else
-		{
-			while(temp->id!=r)
-			{
-				temp=temp->next;	
-			}
-		}
-		centroids[ccount]=*temp;
-		if(ccount==(cent-1))
-			break;
-		j=0;
-		temp2=lista->head;
-		while(temp2!=NULL)
-		{
-			if(temp2->id!=centroids[ccount].id)
-			{
-				sum=0;
-				sum2=0;
-				for(z=0;z<length;z++)//typos euclidean
-				{
-					sum=temp->key1[z] - temp2->key1[z];
-					sum=sum*sum;
-					sum2+=sum;
-					sum=0;
-				}
-				disttable[0][j]=temp2->id;
-				disttable[1][j]=sqrt(sum2);//upologismos apostasis
-				j++;
-			}
-			temp2=temp2->next;
-		}
-		ccount++;
-		ptable[1][0]=0;
-		for(i=1;i<(counter-ccount);i++)
-		{
-			ptable[0][i]=disttable[0][i-1];
-			ptable[1][i]+=ptable[1][i-1]+(disttable[1][i-1] *disttable[1][i-1]);
-		}
-		x=1+ (rand() /( RAND_MAX + 1.0))*(ptable[1][counter-ccount-1]-1);
-		for(i=0;i<(counter-ccount);i++)
-		{
-			if(x<=ptable[1][i])
-			{
-				r=ptable[0][i];
-				break;
-			}
-			
-		}	
-		//printf("%f\n",r);
-		for(i=0;i<2;i++)
-		{
-			free(disttable[i]);
-			free(ptable[i]);
-		}
-		free(ptable);
-		free(disttable);
-	}
-
-}*/
 
 void medoidsmatr(struct list * lista,int counter,struct node * centroids,int cent)
 {
@@ -959,8 +826,8 @@ void medoidsmatr(struct list * lista,int counter,struct node * centroids,int cen
 	double distance,distancemin;
 	struct node * temp;
 	struct node * temp2;
-	double ** disttable;
-	double ** ptable;
+	double disttable[2][counter];
+	double ptable[2][counter];
 	int i,j,z;
 	double x,r;
 	int ccount=0;//metritis kentroidon
@@ -968,14 +835,6 @@ void medoidsmatr(struct list * lista,int counter,struct node * centroids,int cen
 	int pos[cent];	
 	while(ccount<cent)
 	{
-
-		disttable=malloc(2*sizeof(double*));
-		ptable=malloc(2*sizeof(double*));
-		for(i=0;i<2;i++)
-		{
-			disttable[i]=malloc((counter-ccount-1)*sizeof(double));
-			ptable[i]=malloc((counter-ccount)*sizeof(double));
-		}	
 		temp=lista->head;
 		if(ccount==0)
 		{		
@@ -1060,7 +919,9 @@ void medoidsmatr(struct list * lista,int counter,struct node * centroids,int cen
 				r=ptable[0][i];
 				break;
 			}	
-		}	
+		}
+		memset(ptable,0,sizeof(ptable));
+		memset(disttable,0,sizeof(disttable));	
 	}
 }
 

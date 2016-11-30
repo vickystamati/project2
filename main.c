@@ -10,6 +10,7 @@
 #include "assignment.h"
 #include"update.h"
 #include"clara.h"
+#include"lsh.h"
 #define bufSize 2048
 #define bafSize 8192
 
@@ -17,41 +18,15 @@ int main(int argc, char *argv[])
 {
 	FILE* fp;
 	FILE* fpw;
-	struct hashtable ** hasht;
-	struct distlist * dilist;
-	char * tok;
-	int choice;
-	int readcount=0,columns=0;
-	int idcounter;
-	long * matrid;
-	double **summid;
-	double ** matrix,** querymatr;
-	int ** hmat,**gfun;
-	double * tmat;
-	//const char s[2] = ",";
-	double sum=0;
-	double *** htable;
-	double ** hfix;
-	double w=4.0;
-	double *tfix,**vfix,*vector;
-	int *rfix;
-	int fsum;
-	long modnum=1,itemcounter=0,idfind;
-	int length,counter=0;
-	char bufinteger[bufSize],buflen[bufSize],buf[bufSize],bufint[bufSize],baflen[bafSize], newfilename[30];;
-	char *token;	
 	char *dfile,*qfile,*ofile; 
-	int k=3;//megethos hastable 2^k 
-	int L=5;//arithmos hashtable
-	long hashsize=2;
-	int i,j,z,c,check,random;
-	char token3[k],token4[k];
-	unsigned long long binarynum,decimalnum,number;
-	unsigned long itemid;
-	char * pitemid;
-	double temp,ran,y1,y2;
-	double time_spentbr,time_spentlsh,time_spent;
-	int decide;
+	int i,j,check,choice,decide,readcount,length,k=4,L=5,s=2,cent=10;
+	char buflen[bufSize];
+	double time_spentbr,time_spentlsh,time_spent,jsum,jsum2;
+	double ** indistmatr;
+	int decides[3];
+	struct list * inlist;
+	struct node * centroids,*centroidsclarans;
+	struct clustlist * clist,*clistclarans;
 	clock_t beginlsh,endlsh,beginbr,endbr,end,begin;
 	srand(time(NULL));
 	if(argc==7)
@@ -70,8 +45,7 @@ int main(int argc, char *argv[])
 					if((strcmp(buflen,"cosine")==0))
 						check=1;
 					else
-						check=2;
-					
+						check=2;	
 				}
 				else if(strcmp(buflen,"hamming")==0)
 					check=0;
@@ -117,18 +91,6 @@ int main(int argc, char *argv[])
 		printf("Wrong arguments!\n");
 		return 0;	
 	}
-	for(i=1;i<k;i++)
-	{
-		hashsize*=2;
-	}
-	double ** indistmatr;
-	double jsum,jsum2;
-	int decides[3];
-	int s=2;
-	int cent=15;//dinetai apo arxeio
-	struct list * inlist;
-	struct node * centroids,*centroidsclarans;
-	struct clustlist * clist,*clistclarans;
 	clist=malloc(cent*sizeof(struct clustlist));
 	for(i=0;i<cent;i++)
 	{
@@ -143,7 +105,6 @@ int main(int argc, char *argv[])
 	decides[0]=decide;
 	if(decide==0)
 	{
-
 			if(dfile[4]=='H')
 			{
 				choice=0;
@@ -295,9 +256,7 @@ int main(int argc, char *argv[])
 				for(j=0;j<length;j++)
 					clist[i].centro->key1[j]=centroids[i].key1[j];
 			}
-			clist[i].head=NULL;
-				//printf("cent %d  ss %lu\n",cent,clist[i].centro->id);
-				//free(centroids[i]);	
+			clist[i].head=NULL;	
 		}
 		free(centroids);
 		printf("Which assignment method you want?\nPress 0 for PAM assignment (simplest approach)  or 1 for Assignment by LSH/DBH: Reverse Approach\n");
@@ -317,9 +276,7 @@ int main(int argc, char *argv[])
 					medpammatr(inlist,clist,length,readcount,cent,choice);
 			}
 			else if(decide==1)
-			{
-		
-			}
+				lshassign(inlist,clist,length,readcount,cent,choice,k,L);
 			else
 			{
 				printf("Wrong Choice GOODBYE!\n");
@@ -336,7 +293,7 @@ int main(int argc, char *argv[])
 			}
 			else if(decide==1)
 			{
-		
+				lshassign(inlist,clist,length,readcount,cent,choice,k,L);
 			}
 			else
 			{
@@ -355,9 +312,7 @@ int main(int argc, char *argv[])
 		}
 		else if(decide==1)
 		{
-		printf("mpwiwedwww\n");
 			clistclarans=malloc(cent*sizeof(struct clustlist));
-			centroids=malloc(cent*sizeof(struct node));
 			for(i=0;i<cent;i++)
 			{
 				clistclarans[i].centro=malloc(sizeof(struct node));
@@ -371,29 +326,41 @@ int main(int argc, char *argv[])
 					break;
 				swapclist(clistclarans,clist,cent,length,choice);
 				freeclustlist(clist,cent,choice);
-				claransloop(clist,inlist,cent,choice,length,readcount,decides,indistmatr);	
+				claransloop(clist,inlist,cent,choice,length,readcount,decides,indistmatr,k,L);	
 			}
-			for(i=0;i<cent;i++)
-				printf("clist %lu  kai claralist %lu\n",clist[i].centro->id,clistclarans[i].centro->id);
-
 			jsum=calcj(clist,cent);
 			jsum2=calcj(clistclarans,cent);
-			printf("%f %f\n",jsum,jsum2);
 			if(jsum2<jsum)
 			{
-				printf("mpika\n");
 				freeclustlist(clist,cent,choice);
 				swapclist(clist,clistclarans,cent,length,choice);
 			}
+			freeclustlist(clistclarans,cent,choice);
+			if(choice!=0)
+				for(i=0;i<cent;i++)
+					free(clistclarans[i].centro->key1);
+			for(i=0;i<cent;i++)
+				free(clistclarans[i].centro);
+			free(clistclarans);
 		}
 		
 	}
 	else
 		return 0;
-
-
-	//printf("DSADASD\n");
 	silhouette(clist,inlist,cent,choice,length);
-
-	return 0;
+	freeclustlist(clist,cent,choice);
+	if(choice!=0)
+		for(i=0;i<cent;i++)
+			free(clist[i].centro->key1);
+	for(i=0;i<cent;i++)
+		free(clist[i].centro);
+	free(clist);
+	if(decides[0]==1)
+	{
+		for(i=0;i<readcount;i++)
+			free(indistmatr[i]);
+		free(indistmatr);
+	}
+	freehlist(inlist);
+	free(inlist);
 }

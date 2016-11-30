@@ -10,6 +10,7 @@
 #include "assignment.h"
 #include "update.h"
 #include "clara.h"
+#include"lsh.h"
 #define bufSize 2048
 #define bafSize 8192
 
@@ -132,8 +133,7 @@ void claraf(struct clustlist * clist , struct list * inlist,int length,int readc
 							clisttemp[m].centro->key=centtemp->key;
 						else
 							for(z=0;z<length;z++)
-								clisttemp[m].centro->key1[z]=centtemp->key1[z];
-						
+								clisttemp[m].centro->key1[z]=centtemp->key1[z];	
 					}
 					else
 					{
