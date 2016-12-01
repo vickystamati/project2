@@ -1,9 +1,9 @@
 CC = gcc
-OBJECTS = main.o list.o hash.o update.o lsh.o initialise.o clara.o assignment.o
+OBJECTS = main.o list.o hash.o update.o lsh.o initialise.o clara.o assignment.o execute.o
 CFLAGS = -lm
 
 lsh: $(OBJECTS)
-	$(CC) -o lsh $(OBJECTS) $(CFLAGS)
+	$(CC) -o medoids $(OBJECTS) $(CFLAGS)
 
 main.o: main.c
 	$(CC) -c main.c 
@@ -29,7 +29,10 @@ clara.o: clara.c
 assignment.o: assignment.c
 	$(CC) -c assignment.c
 
+execute.o: execute.c
+	$(CC) -c execute.c
+
 .PHONY: clean
 
 clean:
-	rm -f lsh $(OBJECTS)
+	rm -f medoids $(OBJECTS)

@@ -17,7 +17,8 @@
 void insertassig(double ** pammatr,struct clustlist * clist,struct node * item,int choice, int length)
 {
 	int i,j,z;
-	i=pammatr[0][0];//thesi kentroieidous
+
+	i=pammatr[0][0];
 	if (clist[i].head == NULL)//an head null kane eisagwgi
 	{
 		clist[i].head=malloc(sizeof(struct centlist));
@@ -29,9 +30,10 @@ void insertassig(double ** pammatr,struct clustlist * clist,struct node * item,i
 			clist[i].head->key1=malloc(length * sizeof(double));
 			for(z=0;z<length;z++)
 				clist[i].head->key1[z]=item->key1[z];
+			//clist[i].head->key1=item->key1;
 		}
 		clist[i].head->distance=pammatr[0][1];
-		j=pammatr[1][0];//nearest kentroieides
+		j=pammatr[1][0];
 		clist[i].head->listnearid=j;
 		clist[i].head->distancenear=pammatr[1][1];
 		clist[i].head->next=NULL;
@@ -50,6 +52,7 @@ void insertassig(double ** pammatr,struct clustlist * clist,struct node * item,i
 			current->next->key1=malloc(length * sizeof(double));
 			for(z=0;z<length;z++)
 				current->next->key1[z]=item->key1[z];
+			//current->key1=item->key1;
 		}
 		current->next->distance=pammatr[0][1];
 		j=pammatr[1][0];
@@ -60,23 +63,23 @@ void insertassig(double ** pammatr,struct clustlist * clist,struct node * item,i
 }
 
 
-void pamassig(struct list * lista,struct clustlist * clist,double ** indistmatr,int length,int counter,int cent,int choice)//an exei prohgithei concentrate initialization
+void pamassig(struct list * lista,struct clustlist * clist,double ** indistmatr,int length,int counter,int cent,int choice)//concentrate
 {
 	int i,j,z;
 	int flag;
 	int centplace[cent];
 	double **pammatr;
 	struct node * temp;
-	pammatr=malloc(cent*sizeof(double*));//pinakas 2xk
+	pammatr=malloc(cent*sizeof(double*));
 	for(i=0;i<cent;i++)
 		pammatr[i]=malloc(2*sizeof(double));
 	z=0;
-	for(i=0;i<cent;i++)
+	for(i=0;i<cent;i++)//vriskei se poia thesi tou pinaka apostasewn einai to kathe kentroides
 	{
 		temp=lista->head;
 		for(j=0;j<counter;j++)
 		{
-			if(temp->id==clist[i].centro->id)//vriskoume pou einai to stoixeio ston pinaka twn apostasewn
+			if(temp->id==clist[i].centro->id)
 			{
 				centplace[z]=j;
 				z++;
@@ -100,12 +103,12 @@ void pamassig(struct list * lista,struct clustlist * clist,double ** indistmatr,
 			for(j=0;j<cent;j++)
 			{
 				pammatr[j][0]=j;
-				pammatr[j][1]=indistmatr[i][centplace[j]];//simplirwnetai o pinakas
+				pammatr[j][1]=indistmatr[i][centplace[j]];
 			}
-			bubble_sort2d(pammatr, cent);//ton sortarei
+			bubble_sort2d(pammatr, cent);
 			if(choice==3)
 				length=counter;
-			insertassig(pammatr,clist,temp,choice,length);//kai ton pernaei
+			insertassig(pammatr,clist,temp,choice,length);//isws eksw apo to flag==1
 		}
 		temp=temp->next;	
 	}
@@ -115,14 +118,14 @@ void pamassig(struct list * lista,struct clustlist * clist,double ** indistmatr,
 	
 }
 
-double calcj(struct clustlist * clist,int cent)//upologismos tou Dj
+double calcj(struct clustlist * clist,int cent)
 {
 	int i;
 	double sum=0;
 	struct centlist * temp;
 	for(i=0;i<cent;i++)
 	{
-		temp=clist[i].head;//prospelasi sti lista tou kathe kentroieidous
+		temp=clist[i].head;
 		while(temp!=NULL)
 		{
 			sum+=temp->distance;
@@ -171,14 +174,14 @@ void medpamham(struct list * lista,struct clustlist * clist,int length,int count
 				turnintobinary(clist[j].centro->key ,length ,token2);
 				for(z=0;z<length;z++)
 				{
-					if(token[z]!=token2[z])//ipologizei tin apostasi metaksi ton stoixwn
+					if(token[z]!=token2[z])
 						distance++;
 				}
 				pammatr[j][1]=distance;
 				free(token2);
 			}
-			bubble_sort2d(pammatr, cent);//sortarei
-			insertassig(pammatr,clist,temp,choice,length);//pernaei ton pinaka kai stn korifi einai ta kalitera
+			bubble_sort2d(pammatr, cent);
+			insertassig(pammatr,clist,temp,choice,length);//isws eksw apo to flag==1
 			free(token);
 		}
 		z++;
@@ -192,7 +195,7 @@ void medpamham(struct list * lista,struct clustlist * clist,int length,int count
 
 
 
-void medpamcos(struct list * lista,struct clustlist * clist,int length,int counter,int cent,int choice)//omoia gia cosine
+void medpamcos(struct list * lista,struct clustlist * clist,int length,int counter,int cent,int choice)//medoids
 {
 	int i,j,z;
 	int flag;
@@ -250,7 +253,7 @@ void medpamcos(struct list * lista,struct clustlist * clist,int length,int count
 }
 
 
-void medpameucl(struct list * lista,struct clustlist * clist,int length,int counter,int cent,int choice)//omoia gia euclidean
+void medpameucl(struct list * lista,struct clustlist * clist,int length,int counter,int cent,int choice)//medoids
 {
 	int i,j,z;
 	int flag;
@@ -300,7 +303,7 @@ void medpameucl(struct list * lista,struct clustlist * clist,int length,int coun
 	free(pammatr);
 }
 
-void medpammatr(struct list * lista,struct clustlist * clist,int length,int counter,int cent,int choice)//omoia gia matrix
+void medpammatr(struct list * lista,struct clustlist * clist,int length,int counter,int cent,int choice)//medoids
 {
 	int i,j,z;
 	int flag;
@@ -357,19 +360,23 @@ void medpammatr(struct list * lista,struct clustlist * clist,int length,int coun
 	free(pammatr);
 }
 
-double hamdistance(struct node *temp,int length,struct node *temp2)//sinartisi ipologismou hamming
+double hamdistance(struct node *temp,int length,struct node *temp2)
 {
 	char token[65],token2[65];
 	double distance;
 	int z;
+	//token=malloc((length+1)*sizeof(char));
 	turnintobinary(temp->key ,length ,token);
 	distance=0;
+	//token2=malloc((length+1)*sizeof(char));
 	turnintobinary(temp2->key ,length ,token2);
 	for(z=0;z<length;z++)
 	{
 		if(token[z]!=token2[z])
 			distance++;
 	}
+	//free(token2);
+	//free(token);
 	return distance;
 }
 
@@ -433,7 +440,7 @@ double matrdistance(struct list * lista,struct node *temp,int length,struct node
 	distance=temp->key1[pos];
 	return distance;
 }
-void lshassign(struct list * inlist,struct clustlist * clist,int length,int readcount,int cent,int choice,int k,int L)//sinartisi gia lsh
+void lshassign(struct list * inlist,struct clustlist * clist,int length,int readcount,int cent,int choice,int k,int L)
 {
 	struct hashtable ** hasht;
 	int i;
@@ -449,7 +456,10 @@ void lshassign(struct list * inlist,struct clustlist * clist,int length,int read
 			hashsize=temphash;
 		hasht = malloc(L * sizeof(struct hashtable));
 		createhash(hasht,L,hashsize);//dimiourgia hashtable
+		//printf("pawwwwww\n");
 		lshhaminit(hasht,clist,inlist,L,k,length,readcount,cent);
+		//freehasht(hasht,L,hashsize);
+		//free(hasht);
 	
 	}
 	else if(choice==1)
@@ -467,7 +477,10 @@ void lshassign(struct list * inlist,struct clustlist * clist,int length,int read
 		hashsize=readcount/16;
 		hasht = malloc(L * sizeof(struct hashtable));
 		createhash(hasht,L,hashsize);//dimiourgia hashtable
-		lsheuclinit(hasht,clist,inlist,L,k,length,readcount,cent);	
+		lsheuclinit(hasht,clist,inlist,L,k,length,readcount,cent);
+		//freehasht(hasht,L,hashsize);
+		//free(hasht);
+	
 	}
 	else if(choice==3)
 	{
@@ -478,13 +491,16 @@ void lshassign(struct list * inlist,struct clustlist * clist,int length,int read
 		hasht = malloc(L * sizeof(struct hashtable));
 		createhash(hasht,L,hashsize);//dimiourgia hashtable
 		lshmatrinit(hasht,clist,inlist,L,k,length,readcount,cent);
+		//freehasht(hasht,L,hashsize);
+		//free(hasht);
+	
 	}
 	
 
 
 }
 
-void printclustindex(struct clustlist * clist,int pos,FILE *fp)//ektipwnei sto outputfile ti exei mesa to kathe kentroides
+void printclustindex(struct clustlist * clist,int pos,FILE *fp)
 {
 	struct centlist * temp=clist[pos].head;
 	while(temp!=NULL)
@@ -497,7 +513,7 @@ void printclustindex(struct clustlist * clist,int pos,FILE *fp)//ektipwnei sto o
 	}
 }
 
-int clustindexsize(struct clustlist * clist,int pos)//metraei ta stoixeia tis kathe listas tou kentroieidous
+int clustindexsize(struct clustlist * clist,int pos)
 {
 	int counter=0;
 	struct centlist * temp=clist[pos].head;

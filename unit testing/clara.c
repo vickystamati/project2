@@ -31,13 +31,13 @@ void claraf(struct clustlist * clist , struct list * inlist,int length,int readc
 	nnum=40 + 2*cent;
 	listmatr=malloc(nnum*sizeof(int));
 	i=0;
-	while(i<nnum)//ftiaxnei mia nea lista uposinolo tis palias
+	while(i<nnum)
 	{
 		flag=0;
 		random=1+ (rand() /( RAND_MAX + 1.0))*(readcount-1);
 		if(i==0)
 		{
-			listmatr[i]=random;//pernaei ta panta se pinaka wste na ta elegxei na min ksanampei to idio
+			listmatr[i]=random;
 		}
 		else
 		{
@@ -60,7 +60,7 @@ void claraf(struct clustlist * clist , struct list * inlist,int length,int readc
 		i++;
 	}
 	i=0;
-	while(i<cent)//dialegei ta centroids ap tin lista pou dimiourgise prin
+	while(i<cent)
 	{
 		random=1+ (rand() /( RAND_MAX + 1.0))*(nnum-1);
 		if(i==0)
@@ -93,7 +93,7 @@ void claraf(struct clustlist * clist , struct list * inlist,int length,int readc
 		}
 		i++;
 	}
-	if(choice==0)//kanei assign sta nea centroids
+	if(choice==0)
 		medpamham(lista,clist,length,readcount,cent,choice);
 	else if(choice==1)
 		medpamcos(lista,clist,length,readcount,cent,choice);
@@ -146,7 +146,7 @@ void claraf(struct clustlist * clist , struct list * inlist,int length,int readc
 								clisttemp[m].centro->key1[z]=clist[m].centro->key1[z];
 					}
 				}
-				if(choice==0)//assign sto temp domi
+				if(choice==0)
 					medpamham(lista ,clisttemp,length ,readcount ,cent ,choice );
 				else if(choice==1)
 					medpamcos(lista ,clisttemp,length ,readcount ,cent ,choice );
@@ -156,7 +156,7 @@ void claraf(struct clustlist * clist , struct list * inlist,int length,int readc
 					medpammatr(lista ,clisttemp,length ,readcount ,cent ,choice );
 				jtemp=calcj(clisttemp ,cent);
 
-				if(jtemp<jval)//an to Dj einai mikrotero krataei tin kainouria
+				if(jtemp<jval)
 				{
 					freeclustlist(clistfinal,cent,choice);
 					swapclist(clistfinal,clisttemp,cent,length,choice);
@@ -172,13 +172,13 @@ void claraf(struct clustlist * clist , struct list * inlist,int length,int readc
 			}
 		}
 	}
-	if(clistfinal[0].head!=NULL)//ftanei sto telos kai elegxei an exei vrethei estw kai enas kaliteros sindiasmos centroid
+	if(clistfinal[0].head!=NULL)
 	{
 		freeclustlist(clist,cent,choice);
 		swapclist(clist,clistfinal,cent,length,choice);
 	}
 	freeclustlist(clist,cent,choice);
-	if(choice==0)//assign stin teliki domi
+	if(choice==0)
 		medpamham(inlist ,clist,length ,readcount ,cent ,choice );
 	else if(choice==1)
 		medpamcos(inlist ,clist,length ,readcount ,cent ,choice );
@@ -217,16 +217,16 @@ void clara(struct clustlist * clist,struct list * inlist,int length,int readcoun
 	if(choice!=0)
 		for(i=0;i<cent;i++)
 			clistptr[i].centro->key1=malloc(length*sizeof(double));
-	for(i=0;i<s;i++)//kalei tin claraf kai kanei tis apaitoumenes energeies
+	for(i=0;i<s;i++)
 	{
 		claraf(clistptr,inlist,length,readcount,choice,cent);
-		if(i==0)//an einai prwti epanalipsi tin ekxwrei
+		if(i==0)
 		{
 			jsumclara=calcj(clistptr ,cent );
 			swapclist(clist,clistptr,cent,length,choice);
 			freeclustlist(clistptr,cent,choice);
 		}
-		else//alliws elegxei to Dj
+		else
 		{
 			jsum=calcj(clistptr ,cent );
 			if(jsum<jsumclara)

@@ -15,7 +15,7 @@
 #define bufSize 2048
 #define bafSize 8192
 
-void lloydsupdate(struct clustlist * clist,struct list * lista,int cent,int choice,int length,int counter,double calc)
+void lloydsupdate(struct clustlist * clist,struct list * lista,int cent,int choice,int length,int counter,double calc)//list opoiu dilist
 {
 	struct centlist * temp, *temp2;
 	struct node * upd,*cur1,*cur2;
@@ -34,15 +34,15 @@ void lloydsupdate(struct clustlist * clist,struct list * lista,int cent,int choi
 			tempclist[i].centro->key1=malloc(length*sizeof(double));
 		}
 	}
-	while(end==0)//mexri na min allaksei kanena stoixeio epanelave
+	while(end==0)
 	{
 		end=0;
-		for(i=0;i<cent;i++)//gia ola ta kentroieidi
+		for(i=0;i<cent;i++)
 		{
 			flag=0;
 			temp=clist[i].head;
 			flag2=0;
-			while(temp!=NULL)//mesa sto kathe list pou exei i domi
+			while(temp!=NULL)
 			{
 				cur1->id=temp->id;
 				if(choice==0)
@@ -58,7 +58,7 @@ void lloydsupdate(struct clustlist * clist,struct list * lista,int cent,int choi
 						cur2->key=temp2->key;
 					else
 						cur2->key1=temp2->key1;
-					if(temp->id!=temp2->id)//ipologizei tin apostasi
+					if(temp->id!=temp2->id)
 					{
 						if(choice==0)
 							distance+=hamdistance(cur1,length,cur2);
@@ -69,8 +69,8 @@ void lloydsupdate(struct clustlist * clist,struct list * lista,int cent,int choi
 						else if(choice==3)
 							distance+=matrdistance(lista,cur1,length,cur2);
 					}
-					else
-						distance+=temp->distance;//vriskei ayto me tin min apostasi
+					else//an vrei ton eayto tou prosthetei tin apostasi ap to kentroides
+						distance+=temp->distance;
 					temp2=temp2->next;
 				}
 				if(flag==0)
@@ -80,7 +80,12 @@ void lloydsupdate(struct clustlist * clist,struct list * lista,int cent,int choi
 					if(choice==0)
 						upd->key=temp->key;
 					else
+					{
+						//upd->key1=malloc(length*sizeof(double));
+						//for(z=0;z<length;z++)
+						//upd->key1[z]=temp->key1[z];
 						upd->key1=temp->key1;
+					}
 					distancemin=distance;
 				}
 				else
@@ -93,6 +98,8 @@ void lloydsupdate(struct clustlist * clist,struct list * lista,int cent,int choi
 							upd->key=temp->key;
 						else
 						{
+							//for(z=0;z<length;z++)
+							//upd->key1[z]=temp->key1[z];
 							upd->key1=temp->key1;
 						}
 						distancemin=distance;
@@ -100,7 +107,8 @@ void lloydsupdate(struct clustlist * clist,struct list * lista,int cent,int choi
 				}
 				flag++;
 				temp=temp->next;
-			}//telos while,exei vrei to "kalitero metoid"
+			}//telos while,exei vrei to "jalitero metoid"
+			//printf("edwwww %lu\n",upd->id);
 			if(flag2==1)
 				change=approve(clist,lista,upd,cent,i,choice,length,calc);
 			else
@@ -110,7 +118,8 @@ void lloydsupdate(struct clustlist * clist,struct list * lista,int cent,int choi
 					break;
 				change=-1;
 			}
-			if(change!=-1)//an i approve epitrepsei na mpei,diladi exei kalitero J
+			//printf("edwwww2\n");
+			if(change!=-1)
 			{
 				tempclist[i].centro->id=upd->id;
 				if(choice==0)
@@ -148,7 +157,7 @@ void lloydsupdate(struct clustlist * clist,struct list * lista,int cent,int choi
 		{
 			break;
 		}	
-		if(choice==0)//eisagwgi sta nea stoixeia, ta kalitera medoids
+		if(choice==0)
 			medpamham(lista,tempclist,length,counter,cent,choice);
 		else if(choice==1)
 			medpamcos(lista,tempclist,length,counter,cent,choice);
@@ -157,7 +166,7 @@ void lloydsupdate(struct clustlist * clist,struct list * lista,int cent,int choi
 		else if(choice==3)
 			medpammatr(lista,tempclist,length,counter,cent,choice);
 		change=calcj(tempclist,cent);
-		if(change<calc)//allagi an to neo Dj einai kalitero ap to palio
+		if(change<calc)
 		{
 			freeclustlist(clist,cent,choice);
 			swapclist(clist,tempclist,cent,length,choice);
@@ -201,7 +210,7 @@ void clarans(struct clustlist * clist,struct list * lista,int cent,int choice,in
 		clistfinal[i].head=NULL;
 	}
 	i=0;
-	while(i<q)//gia ola ta zeugaria 
+	while(i<q)
 	{
 		pos1=modint(combmatr[i],cent);
 		pos2=combmatr[i]/cent;	
@@ -210,7 +219,7 @@ void clarans(struct clustlist * clist,struct list * lista,int cent,int choice,in
 			cur1=cur1->next;
 		for(j=0;j<cent;j++)
 		{
-			if(pos1!=j)//psaxnei to katallilo centroid
+			if(pos1!=j)
 			{
 				clisttemp[j].centro->id=clist[j].centro->id;
 				if(choice==0)
@@ -219,7 +228,7 @@ void clarans(struct clustlist * clist,struct list * lista,int cent,int choice,in
 					for(z=0;z<length;z++)
 						clisttemp[j].centro->key1[z]=clist[j].centro->key1[z];
 			}
-			else//alliws vazei to idi iparxon
+			else
 			{
 				clisttemp[j].centro->id=cur1->id;
 				if(choice==0)
@@ -229,7 +238,7 @@ void clarans(struct clustlist * clist,struct list * lista,int cent,int choice,in
 						clisttemp[j].centro->key1[z]=cur1->key1[z];
 			}
 		}
-		if(choice==0)//kanei assign sta nea centroids
+		if(choice==0)
 			medpamham(lista,clisttemp,length,counter,cent,choice);
 		else if(choice==1)
 			medpamcos(lista,clisttemp,length,counter,cent,choice);
@@ -265,7 +274,7 @@ void claransupdate(struct clustlist * clist,struct list * lista,int cent,int cho
 	int *combmatr;
 	for(i=0;i<2;i++)
 	{
-		if(q==0)//ipologismos q
+		if(q==0)
 		{
 			try=0.12 * cent *(counter-cent);
 			if(try>=250)
@@ -277,7 +286,7 @@ void claransupdate(struct clustlist * clist,struct list * lista,int cent,int cho
 			qlast=q;
 		combmatr=malloc(qlast*sizeof(int));
 		i=0;
-		while(i<qlast)//vriskei to x
+		while(i<qlast)
 		{
 			flag=0;
 			x=1+ (rand() /( RAND_MAX + 1.0))*((cent*counter-1)-1);
@@ -303,7 +312,7 @@ void claransupdate(struct clustlist * clist,struct list * lista,int cent,int cho
 }
 
 void claransloop(struct clustlist * clist,struct list * inlist,int cent,int choice,int length,int readcount,int *dec,double ** indistmatr,int k,int L)
-{//epanaliptiki domi pou ksanakalei oti exei xrisimopoiithei gia to assign kai to initialize, wste na ksanaginei clarans
+{
 	int i,j;
 	struct node * centroids=malloc(cent*sizeof(struct node));
 	if(dec[1]==1)
@@ -363,7 +372,7 @@ void claransloop(struct clustlist * clist,struct list * inlist,int cent,int choi
 
 
 
-void swapclist(struct clustlist * clist,struct clustlist * tempclist,int cent,int length,int choice)//vazei ta stoixei enos clist se allos
+void swapclist(struct clustlist * clist,struct clustlist * tempclist,int cent,int length,int choice)
 {
 	int i,j;
 	struct centlist * temp, *temp2;
@@ -429,7 +438,7 @@ void swapclist(struct clustlist * clist,struct clustlist * tempclist,int cent,in
 
 
 
-void freeclustlist(struct clustlist * clist,int cent,int choice)//adeiazei tin clist 
+void freeclustlist(struct clustlist * clist,int cent,int choice)
 {
 	struct centlist * temp;
 	int i;
@@ -449,7 +458,7 @@ void freeclustlist(struct clustlist * clist,int cent,int choice)//adeiazei tin c
 }
 
 double approve(struct clustlist * clist,struct list * lista,struct node * upd,int cent,int place ,int choice,int length ,double calc)
-{//elegxei an to kainourgio sinolo apo centroids exei mikrotero Dj ap to iparxon, kai alliws epistrefei -1
+{
 	double tempj=0,distance;
 	int i,flag=0;
 	struct centlist * temp;
@@ -647,7 +656,7 @@ void claransstart(struct clustlist * clist,struct list * inlist,int cent,int cho
 			clistclarans[i].centro->key1=malloc(length*sizeof(double));
 		clistclarans[i].head=NULL;
 	}
-	for(i=0;i<s;i++)//loops gia ektelseis clarans
+	for(i=0;i<s;i++)
 	{
 		claransupdate(clist,inlist,cent,choice,length,readcount,q);
 		if(i!=0)
@@ -675,7 +684,7 @@ void claransstart(struct clustlist * clist,struct list * inlist,int cent,int cho
 		freeclustlist(clist,cent,choice);
 		swapclist(clist,clistclarans,cent,length,choice);
 	}
-	freeclustlist(clistclarans,cent,choice);//apeleutherosi mnimis
+	freeclustlist(clistclarans,cent,choice);
 	if(choice!=0)
 		for(i=0;i<cent;i++)
 			free(clistclarans[i].centro->key1);
@@ -694,5 +703,11 @@ int modint (int a, int b)
 		ret+=b;
 	return ret;
 }
+
+
+
+
+
+
 
 

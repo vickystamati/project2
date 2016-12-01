@@ -26,7 +26,7 @@ void inserthamm(struct list * lista,char * dfile)
 	{
 		printf("Empty file!\n");
 	}
-	while (fscanf(fp, "%s %s", buf,buflen) != EOF)//diavazei to arxeio
+	while (fscanf(fp, "%s %s", buf,buflen) != EOF)
 	{
 		if(counter>0)
 		{
@@ -254,7 +254,7 @@ void concentrateham(struct list * lista,double ** matrix,int length,int counter,
 	double distance;
 	temp=lista->head;
 	i=0;
-	while(temp!=NULL)//ipologizei tin apostasi
+	while(temp!=NULL)
 	{
 		j=0;
 		token=malloc((length+1)*sizeof(char));
@@ -267,7 +267,7 @@ void concentrateham(struct list * lista,double ** matrix,int length,int counter,
 			turnintobinary(temp2->key ,length ,token2);
 			for(z=0;z<length;z++)
 			{
-				if(token[z]!=token2[z])//ham apostasi
+				if(token[z]!=token2[z])
 					distance++;
 			}
 			matrix[i][j]=distance;
@@ -279,7 +279,7 @@ void concentrateham(struct list * lista,double ** matrix,int length,int counter,
 		temp=temp->next;
 		i++;
 	}
-		for(i=0;i<counter;i++)//epidi o pinakas einai anw trigonikos,exei gemisei misos kai edw gemizei olokliros
+		for(i=0;i<counter;i++)
 		{
 			for(j=i;j<counter;j++)
 			{
@@ -289,7 +289,7 @@ void concentrateham(struct list * lista,double ** matrix,int length,int counter,
 					matrix[i][j]=matrix[j][i];
 			}
 		}
-	concentfinal(lista,matrix,counter,centroids,cent);//kalei tin teliki sinartisi
+	concentfinal(lista,matrix,counter,centroids,cent);
 }
 
 
@@ -316,7 +316,7 @@ void concentratecos(struct list * lista,double ** matrix,int length,int counter,
 			}
 			if((sum1>0 && sum2>0) || (sum1<0 && sum2<0))//epeidi einai riza, elegxos na einai diaforetiko ap to 0
 			{
-				matrix[i][j]=1-(sum/(sqrt(sum1) * sqrt(sum2)));//vazei ston pinaka t apostasi
+				matrix[i][j]=1-(sum/(sqrt(sum1) * sqrt(sum2)));
 			}
 			else 
 				matrix[i][j]=0;
@@ -424,11 +424,11 @@ void concentfinal(struct list * lista,double ** matrix,int counter,struct node *
 			{	
 				sum+=matrix[j][t];
 			}
-			summax[i][1]+=matrix[i][j]/sum;//ftiaxnei ton pinaka twn athrismaton
+			summax[i][1]+=matrix[i][j]/sum;
 		}
 		temp=temp->next;
 	}
-	bubble_sort2d(summax, counter);//kanei bublesort gia na vrei to kalitero
+	bubble_sort2d(summax, counter);
 	for(i=0;i<cent;i++)
 	{
 		temp=lista->head;
@@ -436,7 +436,7 @@ void concentfinal(struct list * lista,double ** matrix,int counter,struct node *
 		{
 			temp=temp->next;
 		}
-		centroids[i]=*temp;	//vriskei to katallhlo kai to kanei kentroides
+		centroids[i]=*temp;	
 	}
 	for(i=0;i<counter;i++)
 		free(summax[i]);
@@ -460,7 +460,7 @@ void medoidsham(struct list * lista,int length,int counter,struct node * centroi
 	while(ccount<cent)
 	{	
 		temp=lista->head;
-		if(ccount==0)//vriskei to prwto centroid stin tixi
+		if(ccount==0)
 		{
 			random=1+ (rand() /( RAND_MAX + 1.0))*(counter-1);
 			for(i=0;i<random;i++)
@@ -473,7 +473,7 @@ void medoidsham(struct list * lista,int length,int counter,struct node * centroi
 			while(temp->id!=r)
 				temp=temp->next;		
 		}
-		centroids[ccount]=*temp;//pernaei to kentroeides
+		centroids[ccount]=*temp;
 		if(ccount==(cent-1))
 			break;
 		temp2=lista->head;
@@ -491,11 +491,11 @@ void medoidsham(struct list * lista,int length,int counter,struct node * centroi
 					turnintobinary(temp2->key ,length ,token2);
 					for(z=0;z<length;z++)
 					{
-						if(token[z]!=token2[z])//ipologismos apostasis
+						if(token[z]!=token2[z])
 							distance++;
 					}
 					free(token2);
-					disttable[0][j]=temp2->id;//ftiaxnei pinaka apostasewn
+					disttable[0][j]=temp2->id;
 					disttable[1][j]=distance;
 					j++;
 				}	
@@ -503,7 +503,7 @@ void medoidsham(struct list * lista,int length,int counter,struct node * centroi
 			}
 			free(token);
 		}
-		else//an den einai to prwto stoixeio
+		else
 		{
 			while(temp2!=NULL)
 			{
@@ -532,7 +532,7 @@ void medoidsham(struct list * lista,int length,int counter,struct node * centroi
 								distance++;
 						}
 						free(token);
-						if(distance<distancemin)//vriskei ti min apostasi kai tin pernaei
+						if(distance<distancemin)
 							distancemin=distance;
 					}
 					free(token2);
@@ -546,17 +546,17 @@ void medoidsham(struct list * lista,int length,int counter,struct node * centroi
 		}
 		ccount++;
 		ptable[1][0]=0;
-		for(i=1;i<(counter-ccount);i++)//dimiourgia p table gia ton ipologismo tis sinartisis P(r)
+		for(i=1;i<(counter-ccount);i++)
 		{
 			ptable[0][i]=disttable[0][i-1];
 			ptable[1][i]+=ptable[1][i-1]+(disttable[1][i-1] *disttable[1][i-1]);
 		}
-		x=1+ (rand() /( RAND_MAX + 1.0))*(ptable[1][counter-ccount-1]-1);//vriskei to katallilo x
+		x=1+ (rand() /( RAND_MAX + 1.0))*(ptable[1][counter-ccount-1]-1);
 		for(i=0;i<(counter-ccount);i++)
 		{
 			if(x<=ptable[1][i])
 			{
-				r=ptable[0][i];//dinei to epomeno kentroieides kai ksanaanevainei stin epanalipsi na to ekxwrisei
+				r=ptable[0][i];
 				break;
 			}
 			
@@ -566,7 +566,7 @@ void medoidsham(struct list * lista,int length,int counter,struct node * centroi
 	}
 }
 
-void medoidscos(struct list * lista,int length,int counter,struct node * centroids,int cent)//idia me apo panw alla gia cosine
+void medoidscos(struct list * lista,int length,int counter,struct node * centroids,int cent)
 {
 	int random;
 	struct node * temp;
@@ -690,7 +690,7 @@ void medoidscos(struct list * lista,int length,int counter,struct node * centroi
 
 }
 
-void medoidseucl(struct list * lista,int length,int counter,struct node * centroids,int cent)//idia gia euclidean
+void medoidseucl(struct list * lista,int length,int counter,struct node * centroids,int cent)
 {
 	int random;
 	struct node * temp;
@@ -811,7 +811,7 @@ void medoidseucl(struct list * lista,int length,int counter,struct node * centro
 
 
 
-void medoidsmatr(struct list * lista,int counter,struct node * centroids,int cent)//omoia matrix
+void medoidsmatr(struct list * lista,int counter,struct node * centroids,int cent)
 {
 	int random,flag;
 	double distance,distancemin;
@@ -915,4 +915,10 @@ void medoidsmatr(struct list * lista,int counter,struct node * centroids,int cen
 		memset(disttable,0,sizeof(disttable));	
 	}
 }
+
+
+
+
+
+
 

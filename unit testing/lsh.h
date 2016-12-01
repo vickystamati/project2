@@ -1,0 +1,12 @@
+void lshhaminit(struct hashtable ** ,struct clustlist * ,struct list * ,int ,int ,int,int ,int);
+void lsheuclinit(struct hashtable ** ,struct clustlist * ,struct list * ,int ,int ,int,int ,int);
+void lshcosinit(struct hashtable ** ,struct clustlist * ,struct list * ,int ,int ,int,int ,int);
+void lshmatrinit(struct hashtable ** ,struct clustlist * ,struct list * ,int ,int ,int,int ,int);
+void erasedouble(struct distlist *,int,int );
+void deletedistnode(struct distlist * ,struct distnode * ,int);
+void createnewlist(struct list *,struct clustlist *,int ,int,int,int);
+void cleancentroids(struct clustlist * ,int,int);
+void deleteclustnode(struct clustlist * ,int ,long,int);
+void insertfromhash(double ** ,struct clustlist * ,struct distlist * ,int ,int ,int,struct list *);
+double firstrad(struct clustlist * ,int ,int ,int,struct list * );
+void dilistcount(struct distlist * dlist);

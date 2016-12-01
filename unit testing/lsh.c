@@ -25,6 +25,7 @@ void lshhaminit(struct hashtable ** hasht,struct clustlist * clist,struct list *
 	struct distlist * dilist;
 	long long binarynum,decimalnum;
 	radius=firstrad(clist,length,cent,0,inlist);
+	//printf("radius %f\n",radius);
 	pammatr=malloc(2*sizeof(double*));
 	for(i=0;i<2;i++){
 		pammatr[i]=malloc(2*sizeof(double));
@@ -517,7 +518,7 @@ void lshmatrinit(struct hashtable ** hasht,struct clustlist * clist,struct list 
 
 
 
-void cleancentroids(struct clustlist * clist,int cent,int choice)//vgazei ta kentroieidi
+void cleancentroids(struct clustlist * clist,int cent,int choice)
 {
 	int i,j,flag;
 	struct centlist * tempcl;
@@ -547,7 +548,7 @@ void cleancentroids(struct clustlist * clist,int cent,int choice)//vgazei ta ken
 	}
 	
 }
-void deleteclustnode(struct clustlist * clist,int pos,long fid,int choice)//diagrafei komvou apo to struct, efoson iparxei kai allou
+void deleteclustnode(struct clustlist * clist,int pos,long fid,int choice)
 {
 	struct centlist* temp,*temp2;
 	if(clist[pos].head->id==fid)
@@ -575,7 +576,7 @@ void deleteclustnode(struct clustlist * clist,int pos,long fid,int choice)//diag
 
 
 
-void createnewlist(struct list * inlist,struct clustlist * clist,int cent,int length,int counter,int choice)//dimiourgia listas me ta stoixeia pou apemeinan
+void createnewlist(struct list * inlist,struct clustlist * clist,int cent,int length,int counter,int choice)
 {
 	int i,flag;
 	struct centlist * tempcl;
@@ -618,6 +619,8 @@ void createnewlist(struct list * inlist,struct clustlist * clist,int cent,int le
 	else if(choice==2)
 		medpameucl(listleft,clist,length,counter,cent,2);
 	free(tempnode);
+	//if(listleft->head!=NULL)
+		//freehlist(listleft);
 	free(listleft);
 }
 
@@ -625,7 +628,7 @@ void createnewlist(struct list * inlist,struct clustlist * clist,int cent,int le
 
 
 
-void erasedouble(struct distlist * dlist,int cent,int choice)//diagrafei ta dipla apo kathe lista
+void erasedouble(struct distlist * dlist,int cent,int choice)
 {
 	int i,j;
 	struct distnode * temp1,*temp2;
